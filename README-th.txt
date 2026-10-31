@@ -6,10 +6,10 @@ HLVhf = HAM LOG VHF — แพ็กเกจเว็บแอป (PWA)  v1.0 �
   index.html  manifest.webmanifest  sw.js  icons/ (4 ไฟล์)  .nojekyll
 
 --- ขึ้น GitHub Pages (repository ใหม่ แยกจาก HAM-LOG-DATA) ---
-1) github.com > New repository ตั้งชื่อ HAM-LOG-VHF เลือก Public > Create repository
+1) github.com > New repository ตั้งชื่อ HAM-LOG-Vhf เลือก Public > Create repository
 2) กด "uploading an existing file" ลากไฟล์ทั้งหมด + โฟลเดอร์ icons ลงไป > Commit changes
 3) Settings > Pages > Source: Deploy from a branch · Branch: main · / (root) > Save
-4) รอ 1-2 นาที ลิงก์จะเป็น https://thonphak.github.io/HAM-LOG-VHF/
+4) รอ 1-2 นาที ลิงก์จะเป็น https://e25ynh.github.io/HAM-LOG-Vhf/
 5) เปิดด้วย Chrome / Edge กดไอคอนติดตั้งที่แถบที่อยู่ เพื่อติดตั้งเป็นแอป
 
 --- อัปเดตเวอร์ชัน ---
@@ -22,7 +22,7 @@ HLVhf = HAM LOG VHF — แพ็กเกจเว็บแอป (PWA)  v1.0 �
 * ตั้งค่า > ข้อมูลวิทยุ > อุปกรณ์เสียง: เลือกครั้งเดียว หน้า VOICE เปิดฟังเสียงให้เอง
 
 --- ข้อควรรู้ ---
-* ใช้คู่กับ HLD บนเว็บเดียวกัน (thonphak.github.io) ได้ ข้อมูลตั้งค่าและ Log แยกกัน ไม่ปนกัน
+* ใช้คู่กับ HLD บนเว็บเดียวกัน (e25ynh.github.io) ได้ ข้อมูลตั้งค่าและ Log แยกกัน ไม่ปนกัน
   ถ้าต้องการย้าย Log จาก HLD มา HLVhf: HLD > ตั้งค่า > สำรองข้อมูล แล้ว HLVhf > นำเข้าจากไฟล์สำรอง (หรือใช้ไฟล์ ADIF)
 * ใช้ได้กับ Chrome / Edge (Web Serial สำหรับต่อวิทยุ CI-V / CAT) ไม่รองรับ Safari / Firefox
 * ครั้งแรกที่เปิดหน้า VOICE เบราว์เซอร์จะถามสิทธิ์ไมโครโฟน (เสียงเข้าจากวิทยุ) ให้กดอนุญาต
