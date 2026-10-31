@@ -872,7 +872,7 @@ const R={};for(const k in M)R[M[k]]=k;
 let S={tone:700,auto:true,ch:'mix',dev:'',my:{},ps:[],cur:'',mode:'cq',gr:'',rs:'599',tt:'CQ CQ DE HS0ABC K'};
 try{Object.assign(S,JSON.parse(localStorage.getItem('hlvc')||'{}'))}catch(e){}
 if(S.my&&S.my.wx==='RAIN')S.my.wx='RAINY';
-const VER='1.1 · 2026-10-31';
+const VER='1.1.1 · 2026-10-31';
 const save=()=>{try{localStorage.setItem('hlvc',JSON.stringify(S))}catch(e){}};
 // ---- editions (รุ่น): Standard=VOICE · Plus=+CW · Pro=+DIGITAL · Ultimate=+SATELLITE ; unlocked by a signed key bound to the callsign ----
 const ED_PUB={"kty":"EC","x":"hkg1ObxqZdpiZk-OK94gIz_Dpkas1auP51b0hriWZDI","y":"uPCAm2i8pWxZ1l1G1659VyDVwU3OmZixiiDqeWo5VqU","crv":"P-256"};
@@ -3030,8 +3030,8 @@ if(navigator.mediaDevices)devs();
 #p4 #vpanel .qh > .qtt{margin-left:auto!important}
 #p4.qv .qlw .qh button{display:none}
 /* Dashboard › QSO ล่าสุด: Country closer to Name, QTH widest */
-.hlhf .dqw .lr{grid-template-columns:26px 162px 96px 84px 50px 80px minmax(150px,1.4fr) minmax(90px,.8fr) minmax(140px,2fr) 52px 52px 78px 48px 28px}
-.hlhf .dqw .lr.sat{grid-template-columns:26px 162px 96px 84px 50px 80px 92px minmax(150px,1.4fr) minmax(90px,.8fr) minmax(140px,2fr) 52px 52px 78px 48px 28px}
+.dqw .lr{grid-template-columns:26px 162px 96px 84px 50px 80px minmax(150px,1.4fr) minmax(90px,.8fr) minmax(140px,2fr) 52px 52px 78px 48px 28px}
+.dqw .lr.sat{grid-template-columns:26px 162px 96px 84px 50px 80px 92px minmax(150px,1.4fr) minmax(90px,.8fr) minmax(140px,2fr) 52px 52px 78px 48px 28px}
 
 /* HLHf: QSO log hidden on SATELLITE / CW pages (VOICE keeps its table) */
 .hlhf #p4.sat>.qlw,.hlhf .logw{display:none!important}
