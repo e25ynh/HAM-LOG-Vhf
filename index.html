@@ -1732,11 +1732,12 @@ async function hfHamqsl(){
  return{t:Date.now(),src:'hamqsl.com (N0NBH)',up:g('updated'),sfi:g('solarflux'),sn:g('sunspots'),a:g('aindex'),k:g('kindex'),xr:g('xray'),gm:g('geomagfield'),ns:g('signalnoise'),muf:g('muf'),bands,est:false}}
 async function hfNoaa(){
  const j=async u=>{const r=await fetch(u,{cache:'no-store'});if(!r.ok)throw 0;return r.json()};
- const [fl,kp,xr]=await Promise.all([j('https://services.swpc.noaa.gov/json/f107_cm_flux.json'),j('https://services.swpc.noaa.gov/products/noaa-planetary-k-index.json'),j('https://services.swpc.noaa.gov/json/goes/primary/xrays-6-hour.json').catch(()=>[])]);
- const sfi=Math.round(+((fl.filter(o=>o.flux).slice(-1)[0]||{}).flux)||0),kr=kp[kp.length-1]||[],k=Math.round(+kr[1]||0),a=kr[2]||'';
+ const [fl,kp,xr,ss]=await Promise.all([j('https://services.swpc.noaa.gov/json/f107_cm_flux.json'),j('https://services.swpc.noaa.gov/products/noaa-planetary-k-index.json'),j('https://services.swpc.noaa.gov/json/goes/primary/xrays-6-hour.json').catch(()=>[]),j('https://services.swpc.noaa.gov/json/solar-cycle/swpc_observed_ssn.json').catch(()=>[])]);
+ const sfi=Math.round(+((fl.filter(o=>o.flux).slice(-1)[0]||{}).flux)||0),kr=kp[kp.length-1]||{},kv=Array.isArray(kr)?kr[1]:kr.Kp,av=Array.isArray(kr)?kr[2]:kr.a_running,k=isFinite(+kv)&&kv!==''&&kv!=null?Math.round(+kv):'',a=av!=null&&av!==''?String(Math.round(+av)):''; // SWPC JSON: rows of arrays (old) or objects {time_tag,Kp,a_running} (since 2026-03)
+ const so=Array.isArray(ss)?ss.filter(o=>o&&typeof o==='object'&&!Array.isArray(o)).slice(-1)[0]:null,sk=so&&Object.keys(so).find(x=>/ssn/i.test(x)&&isFinite(+so[x])),sn=sk?String(Math.round(+so[sk])):'--';
  const xl=xr.filter(o=>o.energy==='0.1-0.8nm').slice(-1)[0],xv=xl?+xl.flux:0,xc=xv?(xv>=1e-4?'X'+(xv/1e-4).toFixed(1):xv>=1e-5?'M'+(xv/1e-5).toFixed(1):xv>=1e-6?'C'+(xv/1e-6).toFixed(1):xv>=1e-7?'B'+(xv/1e-7).toFixed(1):'A'+(xv/1e-8).toFixed(1)):'--';
  if(!sfi)throw 0;
- return{t:Date.now(),src:'NOAA SWPC · สภาพย่านเป็นค่าประมาณ',up:new Date().toISOString().slice(11,16)+' UTC',sfi,sn:'--',a,k,xr:xc,gm:hfKt(k),ns:hfNs(k),muf:'--',bands:hfEst(sfi,k),est:true}}
+ return{t:Date.now(),src:'NOAA SWPC · สภาพย่านเป็นค่าประมาณ',up:new Date().toISOString().slice(11,16)+' UTC',sfi,sn,a,k,xr:xc,gm:k===''?'--':hfKt(k),ns:k===''?'--':hfNs(k),muf:'--',bands:hfEst(sfi,k===''?2:k),est:true}}
 let hfBusy=false;
 async function hfLoad(force){
  if(hfBusy)return;if(!force&&HF&&Date.now()-HF.t<45*60000){hfDraw();return}
@@ -1749,7 +1750,7 @@ function hfDraw(msg){
  const ago=h?Math.round((Date.now()-h.t)/60000):0;
  el.innerHTML='<div class="hfh"><h2>HF Conditions</h2><button id="hfr" class="sm" title="ดึงข้อมูลใหม่">↻</button></div>'
   +'<div class="mu" style="font-size:12px">'+(msg?esc(msg)+' · ':'')+(h?'อัปเดต '+esc(h.up||'')+' · '+esc(h.src)+(ago>=1?' · ดึงเมื่อ '+ago+' นาทีก่อน':''):'')+'</div>'
-  +(h?'<div class="hfk">'+kv.map(([k,v])=>'<div><span>'+k+'</span><b>'+esc(String(v||'--'))+'</b></div>').join('')+'</div>'
+  +(h?'<div class="hfk">'+kv.map(([k,v])=>'<div><span>'+k+'</span><b>'+esc(v===0?'0':String(v||'--'))+'</b></div>').join('')+'</div>'
   +'<table class="hft"><thead><tr><th>ย่าน</th><th>กลางวัน</th><th>กลางคืน</th></tr></thead><tbody>'+HFG.map(b=>{const o=(h.bands||{})[b]||{},c=v=>'<td><i style="background:'+(HFC[v]||'#64748b')+'"></i>'+esc(v||'--')+'</td>';return'<tr><td>'+b+'</td>'+c(o.day)+c(o.night)+'</tr>'}).join('')+'</tbody></table>'
   +'<div class="mu" style="font-size:12px">K ต่ำ (0–2) = ย่านสงบ เสียงรบกวนน้อย · SFI สูง = ย่านสูง (17m–10m) เปิดดีตอนกลางวัน'+(h.est?' · ตารางย่านคำนวณคร่าวๆ จาก SFI และ K':'')+'</div>':'');
  const r=$('#hfr');if(r)r.onclick=()=>hfLoad(true)}
@@ -1965,7 +1966,7 @@ function expAdif(){
  const n=v=>new TextEncoder().encode(v).length,f=(k,v)=>v?`<${k}:${n(v)}>${v}`:'',me=S.my||{},
   grid=/^[A-R]{2}[0-9]{2}([A-X]{2})?$/i.test(me.loc||'')?me.loc.toUpperCase():'',
   tm=t=>{const a=(t||'').replace(/:/g,'');return a.length===4?a+'00':a},
-  recs=rows.map(r=>[f('STATION_CALLSIGN',me.call),f('MY_GRIDSQUARE',grid),f('CALL',(r.c||'').trim()),f('QSO_DATE',(r.d||'').replace(/-/g,'')),f('TIME_ON',tm(r.t)),f('MODE',adifMode(r.m)),f('SUBMODE',adifSub(r.m)),f('PROP_MODE',r.pm==='SAT'?'SAT':((MD[mdKey(r.m)]||[])[3]||'')),f('SAT_NAME',r.sat),f('FREQ',r.f),f('BAND',r.b),f('RST_SENT',(r.rs||'').replace(/N/gi,'9')),f('RST_RCVD',(r.rr||'').replace(/N/gi,'9')),f('NAME',r.n),f('COUNTRY',r.co),f('QTH',r.q),f('GRIDSQUARE',(r.g||'').toUpperCase()),f('DXCC',r.dx),f('COMMENT',r.cm||(r.r1?'D-STAR UR:'+(r.ur||'CQCQCQ')+' RPT1:'+r.r1+' RPT2:'+(r.r2||''):'')),f('APP_'+APPID()+'_UR',r.ur),f('APP_'+APPID()+'_RPT1',r.r1),f('APP_'+APPID()+'_RPT2',r.r2),'<EOR>'].filter(Boolean).join(' '));
+  recs=rows.map(r=>[f('STATION_CALLSIGN',me.call),f('MY_GRIDSQUARE',grid),f('CALL',(r.c||'').trim()),f('QSO_DATE',(r.d||'').replace(/-/g,'')),f('TIME_ON',tm(r.t)),f('MODE',adifMode(r.m)),f('SUBMODE',adifSub(r.m)),f('PROP_MODE',r.pm==='SAT'?'SAT':((MD[mdKey(r.m)]||[])[3]||'')),f('SAT_NAME',r.sat),f('SAT_MODE',r.satm),f('FREQ_RX',r.frx),f('BAND_RX',r.brx),f('FREQ',r.f),f('BAND',r.b),f('RST_SENT',(r.rs||'').replace(/N/gi,'9')),f('RST_RCVD',(r.rr||'').replace(/N/gi,'9')),f('NAME',r.n),f('COUNTRY',r.co),f('QTH',r.q),f('GRIDSQUARE',(r.g||'').toUpperCase()),f('DXCC',r.dx),f('COMMENT',r.cm||(r.r1?'D-STAR UR:'+(r.ur||'CQCQCQ')+' RPT1:'+r.r1+' RPT2:'+(r.r2||''):'')),f('APP_'+APPID()+'_UR',r.ur),f('APP_'+APPID()+'_RPT1',r.r1),f('APP_'+APPID()+'_RPT2',r.r2),'<EOR>'].filter(Boolean).join(' '));
  dl(LOGPFX()+utcNow().slice(0,10).replace(/-/g,'')+'.adi','text/plain','ADIF export from HLVhf = HAM LOG VHF\n<ADIF_VER:5>3.1.4 <PROGRAMID:5>HLVhf <EOH>\n\n'+recs.join('\n')+'\n');
  const miss=rows.filter(r=>!r.f||!r.b).length;lmsg('ส่งออก ADIF '+rows.length+' รายการ'+(miss?'  ⚠ '+miss+' รายการยังไม่มีความถี่/ย่าน Log4OM อาจนำเข้าไม่ได้':''))}
 function expCsv(){
@@ -2517,7 +2518,7 @@ function drawMan(){
 document.querySelectorAll('#mlang button').forEach(b=>b.onclick=()=>{S.lang=b.dataset.l;save();drawMan()});
 drawMan();
 // ---- tabs ----
-const MAINT={DIGITAL:1,SAT:1}; // modes closed while being updated (remove a key to re-open it)
+const MAINT={DIGITAL:1}; // modes closed while being updated (remove a key to re-open it)
 const PMP0=$('#pmp').textContent;let CURTAB='p0';
 const EDLB={CW:'CW',VOICE:'VOICE',DIGITAL:'DIGITAL',SAT:'SATELLITE'};
 
@@ -3028,6 +3029,12 @@ if(navigator.mediaDevices)devs();
 #p0 .dqw .qlw{margin:0}#p0 .dqw .lt{height:auto;max-height:none}
 #p4 #vpanel .qh > .qtt{margin-left:auto!important}
 #p4.qv .qlw .qh button{display:none}
+/* Dashboard › QSO ล่าสุด: Country closer to Name, QTH widest */
+.hlhf .dqw .lr{grid-template-columns:26px 162px 96px 84px 50px 80px minmax(150px,1.4fr) minmax(90px,.8fr) minmax(140px,2fr) 52px 52px 78px 48px 28px}
+.hlhf .dqw .lr.sat{grid-template-columns:26px 162px 96px 84px 50px 80px 92px minmax(150px,1.4fr) minmax(90px,.8fr) minmax(140px,2fr) 52px 52px 78px 48px 28px}
+
+/* HLHf: QSO log hidden on SATELLITE / CW pages (VOICE keeps its table) */
+.hlhf #p4.sat>.qlw,.hlhf .logw{display:none!important}
 
 </style>
 <script>
@@ -5331,6 +5338,7 @@ var qrcode = function() {
 
 </script>
 <script>
+if(!/^HLVhf/.test(document.title))document.documentElement.classList.add('hlhf');
 // ===== VOICE add-ons shared by HLHf and HLVhf: audio auto-start · frequency entry · repeaters · D-STAR · export new · QRZ update · QR =====
 (()=>{
  const HLV=/^HLVhf/.test(document.title);
