@@ -3054,6 +3054,8 @@ if(navigator.mediaDevices)devs();
 .qapl{display:inline-flex;align-items:center;text-decoration:none;color:inherit;border:1px solid var(--ln,#8884);border-radius:8px;padding:6px 10px;font-size:12.5px}
 #nav #qrzl.qrzlow{margin-top:auto}#nav #qrzl.qrzlow~button[data-t=p2]{margin-top:0}
 .qli .qem{width:170px;font:12px "IBM Plex Mono",monospace;padding:3px 6px;border-radius:6px;border:1px solid var(--ln,#8885);background:transparent;color:inherit}
+.qslp.nomail .qmailpn,.qslp.nomail #qsgo,.qslp.nomail .qem,.qslp.nomail .qls,.qslp.nomail #qflt{display:none!important}.qslp.nomail .qsg:has(.qmailpn){grid-template-columns:1fr}
+.qslp.nomail .qli{grid-template-columns:22px minmax(90px,1fr) 140px minmax(90px,1fr) auto auto}
 
 </style>
 <script>
@@ -5613,13 +5615,15 @@ if(!/^HLVhf/.test(document.title))document.documentElement.classList.add('hlhf')
    '<div id="qstn" class="qstn"><div class="mu">ข้อมูลสถานีบนการ์ด <span style="font-size:11px">(ใช้กับแบบ “สร้างตาราง + กรอบข้อมูลสถานี”)</span></div><div class="qrow">'+[['de','TNX QSO, VY 73 DE','ชื่อ หรือ Callsign'],['rig','RIG','เช่น IC-9700'],['pwr','PWR (W)','เช่น 50'],['ant','ANT','เช่น X-Quad 2M/70cm'],['qth','QTH','เช่น Sattahip, Chonburi']].map(([k,l,ph])=>'<label class="qs-'+k+'">'+l+'<input data-st="'+k+'" spellcheck="false" placeholder="'+ph+'"></label>').join('')+'</div></div>'+
 '<div class="qrow"><button id="qcdef" class="sm">ใช้การ์ดนี้ส่ง QSL</button><button id="qcdel" class="sm sxred">ลบการ์ดนี้</button><span id="qcst" class="mu"></span></div></div>'+
    '<div class="pn qpv"><div class="sxh"><h2>ตัวอย่าง</h2><label class="mu">QSO <select id="qps"></select></label></div><img id="qpi" alt="ตัวอย่าง QSL"><div class="qrow"><div id="qpn" class="mu" style="flex:1"></div><button id="qdj" class="sm" title="บันทึกการ์ดของ QSO นี้เป็นไฟล์รูป">⬇ JPG</button><button id="qdp" class="sm" title="บันทึกเป็น PNG (คมชัดสุด ไฟล์ใหญ่กว่า)">⬇ PNG</button></div></div></div>'+
-  '<div class="qsg"><div class="pn"><div class="sxh"><h2>ส่งทาง Gmail</h2><span id="qgs" class="mu"></span></div>'+
+  '<div class="qsg"><div class="pn qmailpn"><div class="sxh"><h2>ส่งทาง Gmail</h2><span id="qgs" class="mu"></span></div>'+
    '<div class="qrow"><label>Gmail<input id="qgm" type="email" autocomplete="off" spellcheck="false" placeholder="you@gmail.com"></label><label>App Password<span class="pwe"><input id="qgp" type="password" autocomplete="off" spellcheck="false" placeholder="16 ตัว"><button type="button" class="eye" title="แสดง / ซ่อน">👁</button></span></label><button id="qgt" class="sm">ทดสอบ (ส่งหาตัวเอง)</button><a class="sm qapl" href="https://myaccount.google.com/apppasswords" target="_blank" rel="noopener" title="เปิดหน้า รหัสผ่านของแอป ของ Google (ต้องเปิดการยืนยันแบบ 2 ขั้นตอนก่อน)">สร้าง App Password ↗</a></div>'+
    '<label class="qful">หัวเรื่อง<input id="qgsj" spellcheck="false"></label><label class="qful">ข้อความ<textarea id="qgtx" rows="7" spellcheck="false"></textarea></label>'+
    '<div class="mu" style="font-size:12px">ตัวแปร: {CALL} {NAME} {DATE} {TIME} {MHZ} {BAND} {MODE} {RST} {SAT} {MYCALL} {MYNAME} · <a href="javascript:void 0" id="qgrs">คืนค่าตั้งต้น</a> · App Password สร้างที่ Google Account › Security › 2-Step Verification › App passwords</div></div>'+
    '<div class="pn"><div class="sxh"><h2>QSO ที่จะส่ง QSL</h2><span class="seg" id="qflt"><button data-f="todo" class="pri">ยังไม่ได้ส่ง</button><button data-f="all">ทั้งหมด</button></span></div>'+
    '<div class="qlist" id="qlist"></div><div class="qrow"><button id="qsdl" class="sm" title="บันทึกการ์ดของ QSO ที่ติ๊กเป็นไฟล์ JPG ทีละไฟล์">⬇ บันทึกรูปที่เลือก</button><button id="qsall" class="sm">เลือกทั้งหมด</button><button id="qsgo" class="sm pri">ส่ง QSL ที่เลือก</button><span id="qsres" class="mu"></span></div></div></div></section>');
  const P=$('#pq'),nb=$('#nqsl');
+ const MAILON=()=>S.qslMailOn===true; // e-mail sending is switched off: the page makes cards and saves them as JPG / PNG
+ P.classList.toggle('nomail',!MAILON());{const h=P.querySelector('#qlist')&&P.querySelector('#qlist').closest('.pn').querySelector('h2');if(h&&!MAILON())h.textContent='QSO · บันทึกการ์ดเป็นรูป'}
  const _tab=tab;tab=function(id){if(id==='pq'){_tab('p0');$('#p0').hidden=true;P.hidden=false;document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('pri',b===nb));CURTAB='pq';render();return}P.hidden=true;return _tab.apply(this,arguments)};
  nb.onclick=()=>tab('pq');
  S.qslSt=S.qslSt&&typeof S.qslSt==='object'?S.qslSt:{};
@@ -5638,6 +5642,7 @@ if(!/^HLVhf/.test(document.title))document.documentElement.classList.add('hlhf')
   $('#qmy').textContent=c?c+(nm?' · '+nm:''):'ใส่ Callsign ที่ ตั้งค่า › สถานีของเรา';
   $('#qmys').textContent=[ad,g&&'Grid '+g.toUpperCase(),me().rig&&'RIG '+me().rig,me().ant&&'ANT '+me().ant].filter(Boolean).join(' · ')||'ข้อมูลสถานีจาก ตั้งค่า › สถานีของเรา และ QRZ.com';
   const sent=LOG.filter(r=>r.qsl==='ok').length,no=LOG.filter(r=>r.qsl==='noemail').length,todo=LOG.filter(r=>r.c&&!r.qsl).length;
+  if(!MAILON()){$('#qstat').innerHTML='<div><b>'+LOG.filter(r=>r.c).length+'</b><span>QSO</span></div><div><b>'+S.qslCards.length+'</b><span>การ์ด</span></div>';return}
   $('#qstat').innerHTML='<div><b>'+sent+'</b><span>ส่ง QSL แล้ว</span></div><div><b>'+todo+'</b><span>ยังไม่ได้ส่ง</span></div><div><b>'+no+'</b><span>ไม่มีอีเมล</span></div><div><b>'+S.qslCards.length+'</b><span>การ์ด</span></div>'}
  // ---- the card ----
  const TPL={y0:1124/1222,y1:1198/1222,cells:[[26,364],[365,584],[585,714],[715,922],[923,1088],[1089,1200]].map(([a,b])=>[a/1920,b/1920])};
@@ -5746,7 +5751,7 @@ if(!/^HLVhf/.test(document.title))document.documentElement.classList.add('hlhf')
  $('#qgt').onclick=async()=>{S.qslMail=G.value.trim();S.qslPw=A.value.replace(/\s+/g,'');save();if(!S.qslMail||!S.qslPw){gs('ใส่ Gmail และ App Password ก่อน');return}gs('กำลังส่งอีเมลทดสอบ ...');
   const r=sample(),x=await mailSend({test:1,subject:'[TEST] '+fill(S.qslSubj||DEF_SUBJ,r,''),text:fill(S.qslText||DEF_TEXT,r,''),img:b64(await card(r)),fname:'QSL_TEST.jpg'});gs(x.ok?'✓ ส่งแล้ว ตรวจกล่องจดหมาย '+S.qslMail:'✗ '+(x.err||'ไม่ผ่าน'))};
  // ---- QSO list + sending ----
- let FLT='todo';const PICK=new Set();
+ let FLT=S.qslMailOn===true?'todo':'all';const PICK=new Set();
  document.querySelectorAll('#qflt button').forEach(b=>b.onclick=()=>{FLT=b.dataset.f;document.querySelectorAll('#qflt button').forEach(x=>x.classList.toggle('pri',x===b));list()});
  const stTxt=r=>r.qsl==='ok'?'✓ ส่งแล้ว '+(r.qsld||''):r.qsl==='noemail'?'ไม่มีอีเมล':r.qsl==='err'?'✗ '+(r.qsle||'ไม่ผ่าน'):'—';
  function list(){const rows=LOG.slice().reverse().filter(r=>r.c&&(FLT==='all'||!r.qsl)).slice(0,200);
@@ -5770,7 +5775,7 @@ if(!/^HLVhf/.test(document.title))document.documentElement.classList.add('hlhf')
  $('#qsdl').onclick=async()=>{const rows=[...PICK];if(!rows.length){$('#qsres').textContent='ติ๊กเลือก QSO ก่อน';return}for(let i=0;i<rows.length;i++){$('#qsres').textContent='บันทึกรูป '+(i+1)+'/'+rows.length+' · '+rows[i].c;await saveCard(rows[i],false);await new Promise(z=>setTimeout(z,600))}$('#qsres').textContent='บันทึกรูปแล้ว '+rows.length+' ไฟล์ (โฟลเดอร์ Downloads) · ถ้าเบราว์เซอร์ถาม “ดาวน์โหลดหลายไฟล์” ให้กดอนุญาต'};
  $('#qsgo').onclick=()=>{const rows=[...PICK];if(!rows.length){$('#qsres').textContent='ติ๊กเลือก QSO ก่อน';return}if(!confirm('ส่ง QSL Card ทางอีเมล '+rows.length+' QSO ?'))return;sendQsl(rows)};
  // Dashboard › QSO ล่าสุด: "ส่ง QSL" for the ticked rows
- {const after=$('#qbup')||$('#qfill');if(after&&!$('#qslsend')){after.insertAdjacentHTML('afterend','<button id="qslsend" class="sm" title="ส่ง QSL Card ทางอีเมลให้ QSO ที่ติ๊กเลือก (อีเมลจาก QRZ)">ส่ง QSL (อีเมล)</button>');
+ {const after=$('#qbup')||$('#qfill');if(after&&!$('#qslsend')&&MAILON()){after.insertAdjacentHTML('afterend','<button id="qslsend" class="sm" title="ส่ง QSL Card ทางอีเมลให้ QSO ที่ติ๊กเลือก (อีเมลจาก QRZ)">ส่ง QSL (อีเมล)</button>');
   $('#qslsend').onclick=()=>{const rows=LOG.filter(r=>typeof SEL!=='undefined'&&SEL.has(r));if(!rows.length){lmsg('QSL: ติ๊กเลือก QSO ที่จะส่งก่อน');return}if(!confirm('ส่ง QSL Card ทางอีเมล '+rows.filter(r=>r.qsl!=='ok').length+' QSO ?'))return;sendQsl(rows)}}}
  function render(){station();cards();preview();list()}
 })();
