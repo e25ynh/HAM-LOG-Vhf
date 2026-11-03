@@ -872,7 +872,7 @@ const R={};for(const k in M)R[M[k]]=k;
 let S={tone:700,auto:true,ch:'mix',dev:'',my:{},ps:[],cur:'',mode:'cq',gr:'',rs:'599',tt:'CQ CQ DE HS0ABC K'};
 try{Object.assign(S,JSON.parse(localStorage.getItem('hlvc')||'{}'))}catch(e){}
 if(S.my&&S.my.wx==='RAIN')S.my.wx='RAINY';
-const VER='1.1.1 · 2026-10-31';
+const VER='1.2 · 2026-11-02';
 const save=()=>{try{localStorage.setItem('hlvc',JSON.stringify(S))}catch(e){}};
 // ---- editions (รุ่น): Standard=VOICE · Plus=+CW · Pro=+DIGITAL · Ultimate=+SATELLITE ; unlocked by a signed key bound to the callsign ----
 const ED_PUB={"kty":"EC","x":"hkg1ObxqZdpiZk-OK94gIz_Dpkas1auP51b0hriWZDI","y":"uPCAm2i8pWxZ1l1G1659VyDVwU3OmZixiiDqeWo5VqU","crv":"P-256"};
@@ -3035,6 +3035,23 @@ if(navigator.mediaDevices)devs();
 
 /* HLHf: QSO log hidden on SATELLITE / CW pages (VOICE keeps its table) */
 .hlhf #p4.sat>.qlw,.hlhf .logw{display:none!important}
+/* QSL page (HLHf) */
+.qslp{display:grid;gap:12px;align-content:start;height:100%;min-height:0;overflow:auto;padding-right:2px}
+.qsh{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap}.qsh h2{font-size:22px}
+.qsk{display:flex;gap:10px;flex-wrap:wrap}.qsk div{border:1px solid var(--ln);border-radius:12px;padding:6px 14px;min-width:96px;background:var(--rs)}.qsk b{display:block;font:700 22px "IBM Plex Mono",monospace}.qsk span{font-size:12px;color:var(--mu)}
+.qsg{display:grid;grid-template-columns:minmax(320px,1fr) minmax(0,1.4fr);gap:12px;align-items:start}@media (max-width:1000px){.qsg{grid-template-columns:1fr}}
+.qcards{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.qct{display:flex;flex-direction:column;gap:6px;padding:6px;border-radius:12px;border:2px solid var(--ln);background:var(--rs);cursor:pointer;text-align:left;font-size:12.5px}
+.qct img{width:100%;aspect-ratio:14/9;object-fit:cover;border-radius:8px}.qct.on{border-color:#5b9cff}.qct.def span{color:#f59e0b;font-weight:700}
+.qct.add{align-items:center;justify-content:center;border-style:dashed;min-height:120px;color:#93c5fd}.qct.add b{font-size:34px;line-height:1}
+.qrow{display:flex;gap:10px;flex-wrap:wrap;align-items:end}.qrow label{display:grid;gap:4px;font-size:12.5px;color:var(--mu)}.qful{display:grid;gap:4px;font-size:12.5px;color:var(--mu)}.qful textarea,.qful input{width:100%;font:13px "IBM Plex Mono",monospace}
+.qpv img{width:100%;height:auto;border-radius:10px;display:block;background:var(--rs);min-height:120px}
+.qlist{display:grid;gap:4px;max-height:420px;overflow:auto}.qli{display:grid;grid-template-columns:22px minmax(80px,1fr) 130px minmax(90px,1fr) minmax(90px,1.2fr) auto;gap:8px;align-items:center;padding:4px 8px;border-radius:8px;border:1px solid var(--ln);font-size:13px}
+.qli b{font-family:"IBM Plex Mono",monospace}.qli.ok .qls{color:#22c55e}.qli .qls{color:var(--mu);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#nav button[data-t=pq]{--nc:#fbbf24}
+.qstn{margin-top:10px;padding-top:10px;border-top:1px solid var(--bd,#2a3550);display:grid;gap:6px}.qstn .qrow label{flex:1 1 140px}.qstn .qs-de,.qstn .qs-ant,.qstn .qs-qth{flex-basis:220px}.qstn .qs-pwr{flex:0 1 90px}.qstn input{width:100%}
+.qapl{display:inline-flex;align-items:center;text-decoration:none;color:inherit;border:1px solid var(--ln,#8884);border-radius:8px;padding:6px 10px;font-size:12.5px}
+#nav #qrzl.qrzlow{margin-top:auto}#nav #qrzl.qrzlow~button[data-t=p2]{margin-top:0}
 
 </style>
 <script>
@@ -5522,6 +5539,229 @@ if(!/^HLVhf/.test(document.title))document.documentElement.classList.add('hlhf')
  }
 
 })();
+
+// ===== HLHf: callsign suggestions while typing (stations heard / worked + the Log) =====
+(()=>{if(/^HLVhf/.test(document.title))return;const q=$('#qc');if(!q)return;
+ const BASE='4H7LPT 4J6D 7K4GUR 7L1ETP/1 9M2DA 9M2LUT 9M3YOT 9M4LHN 9M6NA 9V1AD 9V1AJ 9V1AZ 9V1AZY 9V1EO 9V1SST 9V1XX 9V1YP 9W2NCS 9W2PYF 9W2RYF 9W6YG 9W8DNX A65BR BA1PK BA4QFJ BA4QFQ BA4QNR BA4TGI BA4TGI/7 BA7NLM BA7OPF BA8AFK BA8AHG BA8AIK BA8APS BA8AVT BD1AJF BD1AJH BD1BGB BD3QID BD5EUA BD6BJD BD6ITU BD7ATL BD7OH BD7PRC BD7PZF BD7PZH BD8AIS BD8ALX BD8BTE BD8CBU BD8CCU BD8DAU BD8DMS BD8DQZ BD8ENW BD8EUW BD8SCC BG1BGB BG2GFC BG2TGF BG5CDH BG5CZD BG5ENH BG5GDP BG5JSB BG5JVM BG6HTI BG6HVT BG6LVN BG6RJN BG6SPU BG6UGC BG7JJU/P BG7KAN BG7LIH BG7LLZ BG7LMO BG7LZO BG7NIP BG7NTA BG7OOV BG7QAA BG7QIM BG7QIP BG7QIW BG7RHK BG7RJJ BG7RJX BG7RMT BG7RUF BG7RUG BG7SJU BG7UIP BG7UZR BG7VJH BG7WHY BG7WJH BG7WZJ BG7XWF BG8KUV BG8KVC BG8LQN BG8LVZ BG8LZW BG8VGC BH3HMP BH3IEK BH3IQK BH6AAP BH6BDP BH6BHK BH6BSP BH6BSW BH6BSY BH6CIY BH6LJD BH6PIU BH6RJD BH6SZY BH7CTJ BH7FBP BH8BSA BH8GCG BH8GCJ BH8GEJ BH8GGP BH8GHV BH8GYH BH8PVX BH8WTS BH9KPK BI1NWO BI1QGX BI3BO BI3BUV BI3XGJ BI4KKZ BI4KPL BI6PPC BI6PUW BI7AWD BI8SAA BI8SCC BI8SEY BI8SOO BI8SSL BI8SSW BI8SYE BX4AFI BX4PFI BY1QH DU9JJY E20LXN E21AS E21EIC E21EJC E22FFJ E24KHS E24TEI E24XQI E25CRF E25RMW E25RNV E25SWT E25VCR E25XLD E25YYY E25ZBX E27CLF E29AHU E2JOTA HS0GWL HS100IARU HS25SG HS2KWO HS3ANP HS3GHV HS5IGY HS5TXB HS6MYW HS7ZSX HS8MOM JA0RWF JA1COU JA1CUF JA1IRH JA1OJB JA1QJI JA1RAL JA1VDJ JA3OEA JA4FVC JA4VNE JA5BLZ JA5QYR JA6EGM JA6IRK/1 JA6QFV/9 JA6SZV JA7KPI JA7TTU JA8FXG JA9BFA/1 JA9KRO JE0KBP JE1DOT JE1JVL JE1LFX JE2DOD JE2RBK JE2WYA JE4KQH JE4MZT JE5HTN JE6QQN JE6TSP JF1KIC JF2AIA/4 JF2IMU JF2LNC JF3PGW JG2TSL JG6CDH JH0BBE JH0RNN JH1HGI JH1NHK JH1UVJ/4 JH4MGU JH4MPR JH4OUS JH4OVH/4 JH4OYD JH4SUY JH6EOZ JH7XRG JH8FIH JH8RZJ JI0VWL/0 JJ2QXI JK1AFI JK1QAY JK1ZIP JK2VOC JK2XXK JK3HFN JK6DXD JM1SMY JM2OOI JN1VXL JN2QCV JO4JKL JO6NZN JR0RNN JR1HJB JR1JWZ JR2DOL JR2TZJ JR3CNQ JR3KQJ JR5FGP JR5JAQ JR6DI JR6QFV JR6QFV/9 JR6RMK JR8QFG JR9FFO/1 JS1DEH JS6TMW JS6TTU JT0LR R0AN R0CQ RW0A S21AF S21MAC S21PL T88XD UA9CED V85/JE1JKL VR2HK VR2WTM VU2AAP VU2GRM VU2JEK VU2JVK VU2LBW VU2LSK VU2NXG VU2RTF VU2UCR VU3BBS VU3YFD XU7AMO XX9W YB1EIG YB1LQX/P YB1RET/P YB3BUE YB3MBN YB6IOV YC0AVJ YC0BRD YC1BMX YC1DDP YC1RIK YC2YDZ YC3GHN YC6AAB YC8KAF YC8RPK YD0AB YD0ANS YD0BFC YD0MZQ YD0NXX YD1BLC YD1BLY YD2UUY YD2VLD YD3ADN YD3AXS YD5BAG YD6ADL YD6AKP YD6ASC YD6ASL YD6ATL YD6CNS YD6CZD YD6HGG YD6UUY YD7AJK YD7AOL YD7APF YD7KAY YD7KHO YD7UBG YD7UCC YD8PKY YD9IPB YD9IQX YG4SLJ YH0S YH1ATJ YH2UF YH6AUJ YH7HHJ YH8RAS YU3YF'.split(' ');
+ const dl=document.createElement('datalist');dl.id='qcsl';document.body.append(dl);q.setAttribute('list','qcsl');
+ let n=-1;const fill=()=>{if(LOG.length===n)return;n=LOG.length;const set=new Set(BASE);for(const r of LOG){const c=(r.c||'').trim().toUpperCase();if(c)set.add(c)}
+  dl.replaceChildren(...[...set].sort().map(c=>{const o=document.createElement('option');o.value=c;return o}))};
+ fill();q.addEventListener('focus',fill)})();
+
+// ===== HLHf: upload QSOs to the QRZ.com Logbook (through the local bridge ws://localhost:7374 — the browser cannot call the QRZ API) =====
+(()=>{if(/^HLVhf/.test(document.title))return;
+ const hq=$('#hqu');const row=hq&&hq.closest('.sv');if(!row)return;
+ row.insertAdjacentHTML('afterend','<div class="sv qzl"><div class="svt"><b>QRZ Logbook</b><span>ส่ง QSO ขึ้น Logbook อัตโนมัติ (ต้องเป็นสมาชิก QRZ แบบ subscription)</span></div>'+
+  '<span class="pwe"><input id="qbk" type="password" autocomplete="off" spellcheck="false" placeholder="Logbook API Key" aria-label="QRZ Logbook API Key"><button type="button" class="eye" data-pw="qbk" title="แสดง / ซ่อน API Key">👁</button></span>'+
+  '<label class="inl"><input id="qba" type="checkbox"> ส่งอัตโนมัติ</label><button id="qbt" class="sm">ทดสอบ</button><button id="qbo" class="sm" title="ส่ง QSO ที่ยังไม่เคยส่งขึ้น QRZ ทั้งหมด (รวม QSO เก่า)">ส่ง QSO ที่ยังไม่ได้ส่ง</button><span id="qbst" class="mu svs"></span></div>');
+ {const e0=document.querySelector('.pwe .eye:not([data-pw="qbk"])'),b=row.nextElementSibling.querySelector('.eye'),i=$('#qbk');if(e0)b.innerHTML=e0.innerHTML;b.onclick=()=>{i.type=i.type==='password'?'text':'password'}}
+ const K=$('#qbk'),A=$('#qba'),ST=$('#qbst');K.value=S.qlKey||'';A.checked=!!S.qlAuto;
+ K.onchange=()=>{S.qlKey=K.value.trim().toUpperCase();K.value=S.qlKey;save();Q.stop=0;tick()};
+ A.onchange=()=>{S.qlAuto=A.checked;if(A.checked&&!S.qlSince)S.qlSince=Date.now();save();Q.stop=0;tick()};
+ const Q={ws:null,id:0,wait:{},busy:0,stop:0,ver:''};
+ const say=t=>{ST.textContent=t};
+ const tm=r=>Date.parse((r.d||'')+'T'+((r.t||'00:00')+':00').slice(0,8)+'Z')||0;
+ function adif(r){const n=v=>new TextEncoder().encode(v).length,f=(k,v)=>v?`<${k}:${n(String(v))}>${v}`:'',me=S.my||{},
+  grid=/^[A-R]{2}[0-9]{2}([A-X]{2})?$/i.test(me.loc||'')?me.loc.toUpperCase():'',t=(r.t||'').replace(/:/g,''),T=t.length===4?t+'00':t;
+  return[f('STATION_CALLSIGN',(me.call||'').toUpperCase()),f('MY_GRIDSQUARE',grid),f('CALL',(r.c||'').trim().toUpperCase()),f('QSO_DATE',(r.d||'').replace(/-/g,'')),f('TIME_ON',T),f('MODE',adifMode(r.m)),f('SUBMODE',adifSub(r.m)),
+   f('PROP_MODE',r.pm==='SAT'?'SAT':((MD[mdKey(r.m)]||[])[3]||'')),f('SAT_NAME',r.sat),f('SAT_MODE',r.satm),f('FREQ',r.f),f('BAND',r.b),f('FREQ_RX',r.frx),f('BAND_RX',r.brx),
+   f('RST_SENT',(r.rs||'').replace(/N/gi,'9')),f('RST_RCVD',(r.rr||'').replace(/N/gi,'9')),f('NAME',r.n),f('QTH',r.q),f('GRIDSQUARE',(r.g||'').toUpperCase()),f('COMMENT',r.cm),'<EOR>'].filter(Boolean).join(' ')}
+ function open(){if(Q.ws&&Q.ws.readyState<2)return;let ws;try{ws=new WebSocket('ws://localhost:7374')}catch(_){return}Q.ws=ws;
+  ws.onmessage=e=>{let m;try{m=JSON.parse(e.data)}catch(_){return}if(m.t==='v'){Q.ver=m.v||'';stat()}else if(m.t==='qrz'){const f=Q.wait[m.id];if(f){delete Q.wait[m.id];f(m.r||{})}}};
+  ws.onclose=()=>{Q.ver='';stat()};ws.onerror=()=>{}}
+ const call=(action,a)=>new Promise(res=>{if(!Q.ws||Q.ws.readyState!==1)return res({RESULT:'NET',REASON:'ไม่ได้ต่อตัวเชื่อม'});const id=++Q.id;Q.wait[id]=res;
+  Q.ws.send(JSON.stringify({c:'qrz',id,key:S.qlKey,action,adif:a||''}));setTimeout(()=>{if(Q.wait[id]){delete Q.wait[id];res({RESULT:'NET',REASON:'หมดเวลา'})}},40000)});
+ const auth=r=>/invalid api key|access denied|not authorized|subscription|key.*(invalid|disabled)|wrong.*key/i.test(r.REASON||'');
+ function pending(){return LOG.filter(r=>r.c&&r.d&&(r.qz==='q'||(!r.qz&&S.qlAuto&&S.qlSince&&tm(r)>=S.qlSince-3600e3)))}
+ function stat(){const ok=LOG.filter(r=>r.qz==='ok').length,dup=LOG.filter(r=>r.qz==='dup').length,er=LOG.filter(r=>r.qz==='err').length,p=pending().length;
+  const link=!S.qlKey?'ใส่ API Key ก่อน':!Q.ws||Q.ws.readyState!==1?'รอตัวเชื่อม (wsjtx-bridge)':Q.ver&&Q.ver<'1.1'?'ตัวเชื่อมรุ่นเก่า · ติดตั้งชุดใหม่':'';
+  say([Q.msg&&Date.now()-Q.msgT<30e3?Q.msg:'',Q.stop?'⚠ '+Q.stop:'',link,'ส่งแล้ว '+ok+(dup?' · ซ้ำ '+dup:'')+(er?' · ไม่ผ่าน '+er:'')+(p?' · รอส่ง '+p:'')].filter(Boolean).join(' · '));
+  const b=$('#qbo');if(b)b.textContent='ส่ง QSO ที่ยังไม่ได้ส่ง ('+LOG.filter(r=>r.c&&!r.qz).length+')';const d=$('#qbup');if(d)d.textContent='ส่งขึ้น QRZ'+(p?' ('+p+')':'')}
+ async function tick(){if(S.qlKey&&(S.qlAuto||LOG.some(r=>r.qz==='q')))open();stat();
+  if(Q.busy||Q.stop||!S.qlKey||!Q.ws||Q.ws.readyState!==1||(Q.ver&&Q.ver<'1.1'))return;const r=pending()[0];if(!r)return;
+  Q.busy=1;try{const x=await call('INSERT',adif(r)),res=String(x.RESULT||'').toUpperCase();
+   if(res==='OK'||res==='REPLACE'){r.qz='ok';r.qzid=x.LOGID||x.LOGIDS||'';delete r.qze}
+   else if(res==='NET'){Q.stop='ส่งไม่ได้: '+(x.REASON||'เครือข่าย');setTimeout(()=>{Q.stop=0;tick()},60e3)}
+   else if(auth(x)){Q.stop='QRZ ไม่รับ API Key: '+(x.REASON||'')}
+   else if(/duplicate/i.test(x.REASON||'')){r.qz='dup';delete r.qze}
+   else{r.qz='err';r.qze=(x.REASON||res||'?').slice(0,160)}
+   if(r.qz!=='q')saveLog()}finally{Q.busy=0;stat()}if(!Q.stop)setTimeout(tick,1500)}
+ $('#qbt').onclick=async()=>{S.qlKey=K.value.trim().toUpperCase();save();open();say('กำลังทดสอบ ...');await new Promise(r=>setTimeout(r,800));
+  const x=await call('STATUS');const res=String(x.RESULT||'').toUpperCase();
+  Q.msgT=Date.now();say(Q.msg=res==='OK'?'✓ ใช้ได้ · Logbook '+(x.CALLSIGN||x.BOOK_NAME||'')+(x.COUNT?' · มี '+x.COUNT+' QSO':''):res==='NET'?'ต่อไม่ได้: '+(x.REASON||'')+' · เปิดตัวเชื่อม wsjtx-bridge หรือยัง?':'✗ '+(x.REASON||res||'ไม่ผ่าน'));if(res==='OK'){Q.stop=0;setTimeout(tick,500)}};
+ $('#qbo').onclick=()=>{if(!S.qlKey){say('ใส่ API Key ก่อน');K.focus();return}let n=0;for(const r of LOG)if(r.c&&!r.qz){r.qz='q';n++}if(n)saveLog();Q.stop=0;say('เข้าคิว '+n+' QSO');tick()};
+ // Dashboard › QSO ล่าสุด: one button too
+ {const fill=$('#qfill');if(fill&&!$('#qbup')){fill.insertAdjacentHTML('afterend','<button id="qbup" class="sm" title="ส่ง QSO ที่เลือก (หรือที่ยังไม่ได้ส่งทั้งหมด) ขึ้น QRZ Logbook">ส่งขึ้น QRZ</button>');
+  $('#qbup').onclick=()=>{if(!S.qlKey){tab('p2');setTimeout(()=>K.focus(),300);return}const sel=LOG.filter(r=>typeof SEL!=='undefined'&&SEL.has(r));let n=0;for(const r of(sel.length?sel:LOG))if(r.c&&(sel.length?r.qz!=='ok':!r.qz)){r.qz='q';n++}if(n)saveLog();Q.stop=0;lmsg('ส่งขึ้น QRZ: เข้าคิว '+n+' QSO'+(Q.ws&&Q.ws.readyState===1?'':' · รอตัวเชื่อม wsjtx-bridge'));tick()}}}
+ setInterval(tick,15000);setTimeout(tick,1500)})();
+
+// ===== HLHf: QSL page — own station · card library (+ add card) · live preview · Gmail · send QSL by e-mail (address from QRZ, through the local bridge) =====
+(()=>{ // QSL page: HLHf and HLVhf
+ const DEF_SUBJ='QSL {MYCALL} - {CALL} {DATE} {BAND} {MODE}',
+  DEF_TEXT='Dear {NAME}{CALL},\n\nThank you for the QSO on {DATE} at {TIME} UTC, {MHZ} MHz ({BAND}) {MODE}{SAT}.\nPlease find my QSL card attached.\n\n73 de {MYCALL}\n{MYNAME}';
+ const LAY=[['frame','สร้างตาราง + กรอบข้อมูลสถานี ให้ (รูปไม่มีตาราง)'],['tpl','ใส่ในตารางที่มีอยู่ในรูป (การ์ด E25YNH)'],['br','กล่องข้อมูล มุมขวาล่าง'],['bl','กล่องข้อมูล มุมซ้ายล่าง'],['tr','กล่องข้อมูล มุมขวาบน'],['tl','กล่องข้อมูล มุมซ้ายบน'],['bc','กล่องข้อมูล กลางล่าง']];
+ // ---- nav button (under QRZ.com) + page ----
+ const qa=$('#qrzl');if(!qa)return;
+ qa.insertAdjacentHTML('afterend','<button data-t="pq" id="nqsl" title="QSL Card ทางอีเมล"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg><span>QSL</span></button>');
+ $('#p3').insertAdjacentHTML('afterend','<section id="pq" class="tab qslp" hidden>'+
+  '<div class="pn qsh"><div><h2 id="qmy">QSL</h2><div id="qmys" class="mu"></div></div><div class="qsk" id="qstat"></div></div>'+
+  '<div class="qsg"><div class="pn"><div class="sxh"><h2>การ์ด QSL</h2><span class="mu">เลือกการ์ดที่ใช้ส่ง · เพิ่มได้หลายใบ</span></div>'+
+   '<div id="qcards" class="qcards"></div><input id="qcf" type="file" accept="image/*" hidden>'+
+   '<div class="qrow"><label>ชื่อการ์ด<input id="qcn" spellcheck="false"></label><label>วางข้อมูล QSO<select id="qcl">'+LAY.map(([v,t])=>'<option value="'+v+'">'+t+'</option>').join('')+'</select></label></div>'+
+   '<div id="qstn" class="qstn"><div class="mu">ข้อมูลสถานีบนการ์ด <span style="font-size:11px">(ใช้กับแบบ “สร้างตาราง + กรอบข้อมูลสถานี”)</span></div><div class="qrow">'+[['de','TNX QSO, VY 73 DE','ชื่อ หรือ Callsign'],['rig','RIG','เช่น IC-9700'],['pwr','PWR (W)','เช่น 50'],['ant','ANT','เช่น X-Quad 2M/70cm'],['qth','QTH','เช่น Sattahip, Chonburi']].map(([k,l,ph])=>'<label class="qs-'+k+'">'+l+'<input data-st="'+k+'" spellcheck="false" placeholder="'+ph+'"></label>').join('')+'</div></div>'+
+'<div class="qrow"><button id="qcdef" class="sm">ใช้การ์ดนี้ส่ง QSL</button><button id="qcdel" class="sm sxred">ลบการ์ดนี้</button><span id="qcst" class="mu"></span></div></div>'+
+   '<div class="pn qpv"><div class="sxh"><h2>ตัวอย่าง</h2><label class="mu">QSO <select id="qps"></select></label></div><img id="qpi" alt="ตัวอย่าง QSL"><div id="qpn" class="mu"></div></div></div>'+
+  '<div class="qsg"><div class="pn"><div class="sxh"><h2>ส่งทาง Gmail</h2><span id="qgs" class="mu"></span></div>'+
+   '<div class="qrow"><label>Gmail<input id="qgm" type="email" autocomplete="off" spellcheck="false" placeholder="you@gmail.com"></label><label>App Password<span class="pwe"><input id="qgp" type="password" autocomplete="off" spellcheck="false" placeholder="16 ตัว"><button type="button" class="eye" title="แสดง / ซ่อน">👁</button></span></label><button id="qgt" class="sm">ทดสอบ (ส่งหาตัวเอง)</button><a class="sm qapl" href="https://myaccount.google.com/apppasswords" target="_blank" rel="noopener" title="เปิดหน้า รหัสผ่านของแอป ของ Google (ต้องเปิดการยืนยันแบบ 2 ขั้นตอนก่อน)">สร้าง App Password ↗</a></div>'+
+   '<label class="qful">หัวเรื่อง<input id="qgsj" spellcheck="false"></label><label class="qful">ข้อความ<textarea id="qgtx" rows="7" spellcheck="false"></textarea></label>'+
+   '<div class="mu" style="font-size:12px">ตัวแปร: {CALL} {NAME} {DATE} {TIME} {MHZ} {BAND} {MODE} {RST} {SAT} {MYCALL} {MYNAME} · <a href="javascript:void 0" id="qgrs">คืนค่าตั้งต้น</a> · App Password สร้างที่ Google Account › Security › 2-Step Verification › App passwords</div></div>'+
+   '<div class="pn"><div class="sxh"><h2>QSO ที่จะส่ง QSL</h2><span class="seg" id="qflt"><button data-f="todo" class="pri">ยังไม่ได้ส่ง</button><button data-f="all">ทั้งหมด</button></span></div>'+
+   '<div class="qlist" id="qlist"></div><div class="qrow"><button id="qsall" class="sm">เลือกทั้งหมด</button><button id="qsgo" class="sm pri">ส่ง QSL ที่เลือก</button><span id="qsres" class="mu"></span></div></div></div></section>');
+ const P=$('#pq'),nb=$('#nqsl');
+ const _tab=tab;tab=function(id){if(id==='pq'){_tab('p0');$('#p0').hidden=true;P.hidden=false;document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('pri',b===nb));CURTAB='pq';render();return}P.hidden=true;return _tab.apply(this,arguments)};
+ nb.onclick=()=>tab('pq');
+ S.qslSt=S.qslSt&&typeof S.qslSt==='object'?S.qslSt:{};
+ P.querySelectorAll('[data-st]').forEach(i=>{i.value=S.qslSt[i.dataset.st]||'';let t=0;i.oninput=()=>{S.qslSt[i.dataset.st]=i.value.trim();save();clearTimeout(t);t=setTimeout(()=>preview(),350)}});
+ // ---- storage: card pictures in IndexedDB, list in S.qslCards ----
+ const idb=()=>new Promise((res,rej)=>{const q=indexedDB.open('hlhf',1);q.onupgradeneeded=()=>q.result.createObjectStore('kv');q.onsuccess=()=>res(q.result);q.onerror=()=>rej(q.error)});
+ const kvGet=async k=>{const d=await idb();return new Promise(r=>{const t=d.transaction('kv').objectStore('kv').get(k);t.onsuccess=()=>r(t.result||null);t.onerror=()=>r(null)})};
+ const kvSet=async(k,v)=>{const d=await idb();return new Promise(r=>{const t=d.transaction('kv','readwrite');v==null?t.objectStore('kv').delete(k):t.objectStore('kv').put(v,k);t.oncomplete=()=>r(true);t.onerror=()=>r(false)})};
+ const IMG={};const imgOf=async id=>{if(IMG[id])return IMG[id];const b=await kvGet('qslimg:'+id);if(!b)return null;return IMG[id]=await new Promise(r=>{const im=new Image();im.onload=()=>r(im);im.onerror=()=>r(null);im.src=URL.createObjectURL(b)})};
+ S.qslCards=Array.isArray(S.qslCards)?S.qslCards:[];let SELC=S.qslCard||(S.qslCards[0]||{}).id||'';
+ (async()=>{const old=await kvGet('qslbg').catch(()=>null);if(old&&!S.qslCards.length){const id='c'+Date.now();await kvSet('qslimg:'+id,old);await kvSet('qslbg',null);S.qslCards.push({id,n:'การ์ด 1',pos:S.qslPos||'br'});S.qslCard=SELC=id;save()}if(!P.hidden)render()})();
+ const cardOf=id=>S.qslCards.find(c=>c.id===id);
+ // ---- own station ----
+ const me=()=>S.my||{},mhz=r=>{const v=parseFloat(r.f);return isFinite(v)?v.toFixed(3):''};
+ function station(){const c=(me().call||'').toUpperCase(),q=QZ[c]||{},nm=(typeof myFull==='function'?myFull():'')||me().name||'',ad=typeof myAddr==='function'?myAddr():'',g=me().loc||q.g||'';
+  $('#qmy').textContent=c?c+(nm?' · '+nm:''):'ใส่ Callsign ที่ ตั้งค่า › สถานีของเรา';
+  $('#qmys').textContent=[ad,g&&'Grid '+g.toUpperCase(),me().rig&&'RIG '+me().rig,me().ant&&'ANT '+me().ant].filter(Boolean).join(' · ')||'ข้อมูลสถานีจาก ตั้งค่า › สถานีของเรา และ QRZ.com';
+  const sent=LOG.filter(r=>r.qsl==='ok').length,no=LOG.filter(r=>r.qsl==='noemail').length,todo=LOG.filter(r=>r.c&&!r.qsl).length;
+  $('#qstat').innerHTML='<div><b>'+sent+'</b><span>ส่ง QSL แล้ว</span></div><div><b>'+todo+'</b><span>ยังไม่ได้ส่ง</span></div><div><b>'+no+'</b><span>ไม่มีอีเมล</span></div><div><b>'+S.qslCards.length+'</b><span>การ์ด</span></div>'}
+ // ---- the card ----
+ const TPL={y0:1124/1222,y1:1198/1222,cells:[[26,364],[365,584],[585,714],[715,922],[923,1088],[1089,1200]].map(([a,b])=>[a/1920,b/1920])};
+ function cardTpl(BG,r){const k=Math.min(1,2000/BG.naturalWidth),W=Math.round(BG.naturalWidth*k),H=Math.round(BG.naturalHeight*k),c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d');x.drawImage(BG,0,0,W,H);
+  const y0=TPL.y0*H,y1=TPL.y1*H,rh=y1-y0,sat=r.pm==='SAT'&&r.sat,vals=[(r.c||'').toUpperCase(),r.d||'',(r.t||'').slice(0,5),mhz(r),(r.m||'').toUpperCase(),r.rs||''];
+  x.fillStyle='#0b2a5b';x.textAlign='center';x.textBaseline='middle';
+  TPL.cells.forEach(([a,b],i)=>{const cx=(a+b)/2*W,cw=(b-a)*W-12;let fs=Math.round(rh*(i===0?.52:.42));const fam=i===0?'"Arial Black",Impact,sans-serif':'"Arial",sans-serif',wt=i===0?'900':'700';
+   x.font=wt+' '+fs+'px '+fam;while(x.measureText(vals[i]).width>cw&&fs>10){fs--;x.font=wt+' '+fs+'px '+fam}
+   if(i===0&&sat){x.fillText(vals[i],cx,y0+rh*.38);let f2=Math.round(rh*.24);x.font='700 '+f2+'px Arial,sans-serif';const t='via '+r.sat+(r.satm?' · '+r.satm:'');while(x.measureText(t).width>cw&&f2>8){f2--;x.font='700 '+f2+'px Arial,sans-serif'}x.fillStyle='#b91c1c';x.fillText(t,cx,y0+rh*.8);x.fillStyle='#0b2a5b'}
+   else x.fillText(vals[i],cx,y0+rh/2)});x.textAlign='left';return c}
+ function cardBox(BG,pos,r){const W=1400,H=900,c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d');
+  if(BG){const s=Math.max(W/BG.naturalWidth,H/BG.naturalHeight),w=BG.naturalWidth*s,h=BG.naturalHeight*s;x.drawImage(BG,(W-w)/2,(H-h)/2,w,h)}
+  else{const g=x.createLinearGradient(0,0,W,H);g.addColorStop(0,'#0b2a5b');g.addColorStop(.55,'#123f86');g.addColorStop(1,'#0a1730');x.fillStyle=g;x.fillRect(0,0,W,H);
+   x.fillStyle='#fff';x.font='900 190px "Arial Black",Impact,sans-serif';x.textBaseline='top';x.fillText((me().call||'MYCALL').toUpperCase(),60,50);
+   x.font='600 40px Arial,sans-serif';x.fillStyle='#cfe3ff';x.fillText([me().name,me().loc?'Grid '+me().loc:''].filter(Boolean).join(' · ').slice(0,60),66,260);
+   const fl=['#ED1C24','#fff','#241D4F','#fff','#ED1C24'],hs=[1,1,2,1,1];let y=H-110;for(let i=0;i<5;i++){x.fillStyle=fl[i];x.fillRect(0,y,W,hs[i]*15);y+=hs[i]*15}}
+  if(pos==='tpl')pos='br';const bw=760,sat=r.pm==='SAT'&&r.sat,bh=sat?318:270,m=40,bx=pos[1]==='l'?m:pos[1]==='c'?(W-bw)/2:W-bw-m,by=pos[0]==='t'?m:H-bh-m-(BG?0:110);
+  x.save();x.shadowColor='rgba(0,0,0,.35)';x.shadowBlur=24;x.fillStyle='rgba(255,255,255,.93)';x.beginPath();x.roundRect?x.roundRect(bx,by,bw,bh,22):x.rect(bx,by,bw,bh);x.fill();x.restore();
+  x.textBaseline='alphabetic';x.fillStyle='#0b2a5b';x.font='600 26px Arial,sans-serif';x.fillText('TO RADIO',bx+28,by+48);x.font='900 54px "Arial Black",Impact,sans-serif';x.fillText((r.c||'').toUpperCase(),bx+170,by+56);
+  const cols=[['DATE (UTC)',r.d||'',150],['TIME',(r.t||'').slice(0,5),95],['MHz',mhz(r),150],['BAND',(r.b||'').toUpperCase(),100],['MODE',(r.m||'').toUpperCase(),110],['RST',r.rs||'',95]];let cx=bx+28;const ty=by+96;
+  for(const[h,v,w]of cols){x.font='700 18px Arial,sans-serif';x.fillStyle='#4b5d7a';x.fillText(h,cx,ty+24);x.font='700 30px Arial,sans-serif';x.fillStyle='#0b2a5b';x.fillText(String(v),cx,ty+68,w-10);cx+=w}
+  x.strokeStyle='#0b2a5b';x.lineWidth=2;x.beginPath();x.moveTo(bx+28,ty+36);x.lineTo(bx+bw-28,ty+36);x.stroke();
+  let fy=ty+120;if(sat){x.font='700 26px Arial,sans-serif';x.fillText('SATELLITE  '+r.sat+(r.satm?'  ·  MODE '+r.satm:''),bx+28,fy);fy+=48}
+  x.font='italic 600 26px Arial,sans-serif';x.fillStyle='#b91c1c';x.fillText('TNX QSO · 73 de '+(me().call||'').toUpperCase(),bx+28,fy+8);return c}
+ function cardFrame(BG,r){let W=1920,H=1222;if(BG){const k=Math.min(1,2000/BG.naturalWidth);W=Math.round(BG.naturalWidth*k);H=Math.round(BG.naturalHeight*k)}
+  const c=document.createElement('canvas');c.width=W;c.height=H;const x=c.getContext('2d'),s=W/1920,Y=v=>H-(1222-v)*s,X=v=>v*s;
+  if(BG)x.drawImage(BG,0,0,W,H);else{
+  const g=x.createLinearGradient(0,0,W,H);g.addColorStop(0,'#0b2a5b');g.addColorStop(.55,'#123f86');g.addColorStop(1,'#0a1730');x.fillStyle=g;x.fillRect(0,0,W,H);
+   x.fillStyle='#fff';x.textBaseline='top';x.font='900 '+X(230)+'px "Arial Black",Impact,sans-serif';x.fillText((me().call||'MYCALL').toUpperCase(),X(70),X(60));
+   x.font='600 '+X(48)+'px Arial,sans-serif';x.fillStyle='#cfe3ff';x.fillText([me().name,me().qth,me().loc?'Grid '+me().loc.toUpperCase():''].filter(Boolean).join(' · ').slice(0,70),X(78),X(330));
+   const fl=['#ED1C24','#fff','#241D4F','#fff','#ED1C24'],hs=[1,1,2,1,1];let fy=X(470);for(let i=0;i<5;i++){x.fillStyle=fl[i];x.fillRect(0,fy,W,hs[i]*X(18));fy+=hs[i]*X(18)}}
+  const fit=(t,w,fs,f)=>{x.font=f(fs);while(x.measureText(t).width>w&&fs>8){fs--;x.font=f(fs)}return fs};
+  const panel=(a,b,w,h)=>{x.save();x.shadowColor='rgba(0,0,0,.35)';x.shadowBlur=X(14);x.fillStyle='rgba(244,245,247,.95)';x.fillRect(a,b,w,h);x.restore();x.strokeStyle='#0b2a5b';x.lineWidth=Math.max(2,X(3));x.strokeRect(a,b,w,h)};
+  // QSO table
+  const cells=[[10,348],[348,568],[568,698],[698,906],[906,1072],[1072,1184]],hd=['CONFIRMING QSO WITH','DATE','UTC','MHZ','MODE','RST'],
+   sat=r.pm==='SAT'&&r.sat,vals=[(r.c||'').toUpperCase(),r.d||'',(r.t||'').slice(0,5),mhz(r),(r.m||'').toUpperCase(),r.rs||''],h0=Y(1082),h1=Y(1136),v1=Y(1212);
+  panel(X(10),h0,X(1174),v1-h0);x.fillStyle='#dfe6f1';x.fillRect(X(10),h0,X(1174),h1-h0);x.lineWidth=Math.max(1.5,X(2));x.beginPath();x.moveTo(X(10),h1);x.lineTo(X(1184),h1);
+  cells.slice(1).forEach(([a])=>{x.moveTo(X(a),h0);x.lineTo(X(a),v1)});x.stroke();x.textAlign='center';x.textBaseline='middle';
+  cells.forEach(([a,b],i)=>{const cx=X((a+b)/2),cw=X(b-a)-X(14),rh=v1-h1;x.fillStyle='#0b2a5b';fit(hd[i],cw,Math.round(X(24)),f=>'700 '+f+'px Arial,sans-serif');x.fillText(hd[i],cx,(h0+h1)/2);
+   const fam=i===0?'"Arial Black",Impact,sans-serif':'Arial,sans-serif',wt=i===0?'900':'700';fit(vals[i],cw,Math.round(rh*(i===0?.56:.44)),f=>wt+' '+f+'px '+fam);
+   if(i===0&&sat){x.fillText(vals[i],cx,h1+rh*.38);const t='via '+r.sat+(r.satm?' · '+r.satm:'');fit(t,cw,Math.round(rh*.24),f=>'700 '+f+'px Arial,sans-serif');x.fillStyle='#b91c1c';x.fillText(t,cx,h1+rh*.8)}
+   else x.fillText(vals[i],cx,h1+rh/2)});
+  // station box: fixed size (700 x 242 on a 1920-wide card), bottom-aligned with the table; long text shrinks to fit
+  const st=S.qslSt||{},vals2={de:st.de||'',rig:st.rig||'',pwr:st.pwr||'',ant:st.ant||'',qth:st.qth||''};
+  const L=[[['TNX QSO, VY 73 DE'],['de']],[['RIG'],['rig'],['PWR'],['pwr'],['W']],[['ANT'],['ant']],[['QTH'],['qth'],['PSE QSL']]];
+  const ls=Math.round(X(25)),vs=Math.round(X(28)),gap=X(10),pad=X(20),minV=X(70),lf='700 '+ls+'px Arial,sans-serif',vf='700 '+vs+'px Arial,sans-serif';
+  const tw=(t,f)=>{x.font=f;return x.measureText(t).width},nat=ln=>ln.reduce((a,it)=>a+(it.length===1&&!(it[0] in vals2)?tw(it[0],lf):Math.max(minV,tw(vals2[it[0]],vf)+X(24)))+gap,-gap);
+  const bw=X(700),lh=X(56),bh=lh*4+X(18),bx=W-X(10)-bw,by=v1-bh;
+  panel(bx,by,bw,bh);x.textAlign='left';x.textBaseline='alphabetic';
+  L.forEach((ln,j)=>{const yb=by+X(9)+lh*(j+.7),vk=ln.filter(it=>it[0] in vals2),fixed=ln.filter(it=>!(it[0] in vals2)).reduce((a,[t])=>a+tw(t,lf),0)+gap*(ln.length-1),
+    free=Math.max(0,bw-pad*2-fixed),PW=X(112),need=vk.map(([k])=>k==='pwr'?PW:k==='rig'?Math.max(0,free-PW-gap*0):free);let cx=bx+pad,vi=0;
+   ln.forEach(it=>{if(!(it[0] in vals2)){x.font=lf;x.fillStyle='#0b2a5b';x.fillText(it[0],cx,yb);cx+=tw(it[0],lf)+gap;return}
+    const w=need[vi];vi++;x.save();x.strokeStyle='#5b6b86';x.lineWidth=Math.max(1,X(2));x.setLineDash([X(3),X(6)]);x.beginPath();x.moveTo(cx,yb+X(6));x.lineTo(cx+w,yb+X(6));x.stroke();x.restore();
+    const v=vals2[it[0]];let f=vs;x.font=vf;while(x.measureText(v).width>w-X(8)&&f>8){f--;x.font='700 '+f+'px Arial,sans-serif'}x.fillStyle='#1d3f8f';x.fillText(v,cx+X(8),yb);cx+=w+gap})});
+  return c}
+ async function card(r,id){const cd=cardOf(id||S.qslCard)||{pos:'frame'},BG=cd.id?await imgOf(cd.id):null;return cd.pos==='tpl'&&BG?cardTpl(BG,r):cd.pos==='frame'?cardFrame(BG,r):cardBox(BG,cd.pos,r)}
+ const sample=()=>LOG.slice().reverse().find(r=>r.c)||{c:'JA1ABC',d:new Date().toISOString().slice(0,10),t:'12:34:00',f:'14.074',b:'20m',m:'FT8',rs:'-10'};
+ // ---- card library ----
+ async function cards(){const box=$('#qcards');const tiles=[];
+  for(const c of S.qslCards){const im=await imgOf(c.id),d=E('button',{className:'qct'+(c.id===SELC?' on':'')+(c.id===S.qslCard?' def':''),title:c.n});if(im)d.append(E('img',{src:im.src,alt:''}));d.append(E('span',{textContent:(c.id===S.qslCard?'★ ':'')+c.n}));d.onclick=()=>{SELC=c.id;render()};tiles.push(d)}
+  const add=E('button',{className:'qct add',title:'เพิ่มการ์ด QSL'});add.innerHTML='<b>＋</b><span>เพิ่มการ์ด</span>';add.onclick=()=>$('#qcf').click();tiles.push(add);box.replaceChildren(...tiles);
+  const c=cardOf(SELC);for(const k of['#qcn','#qcl','#qcdef','#qcdel'])$(k).disabled=!c;$('#qcn').value=c?c.n:'';$('#qcl').value=c?c.pos:'frame';
+  $('#qcst').textContent=c?(c.id===S.qslCard?'การ์ดนี้ใช้ส่ง QSL อยู่':''):'ยังไม่มีการ์ด · กด ＋ เพิ่มการ์ด (ไม่มีการ์ดจะใช้พื้นหลังสำเร็จรูป)'}
+ $('#qcf').onchange=async e=>{const f=e.target.files[0];e.target.value='';if(!f)return;
+  const im=await new Promise(r=>{const i=new Image();i.onload=()=>r(i);i.onerror=()=>r(null);i.src=URL.createObjectURL(f)});if(!im){$('#qcst').textContent='เปิดรูปนี้ไม่ได้';return}
+  const k=Math.min(1,2000/im.naturalWidth),c=document.createElement('canvas');c.width=Math.round(im.naturalWidth*k);c.height=Math.round(im.naturalHeight*k);c.getContext('2d').drawImage(im,0,0,c.width,c.height);
+  const b=await new Promise(r=>c.toBlob(r,'image/jpeg',.92)),id='c'+Date.now(),ar=im.naturalWidth/im.naturalHeight;await kvSet('qslimg:'+id,b);
+  S.qslCards.push({id,n:(f.name||'การ์ด').replace(/\.[^.]+$/,'').slice(0,30)||'การ์ด '+(S.qslCards.length+1),pos:'frame'});if(!S.qslCard)S.qslCard=id;SELC=id;save();render()};
+ $('#qcn').onchange=()=>{const c=cardOf(SELC);if(c){c.n=$('#qcn').value.trim().slice(0,30)||c.n;save();render()}};
+ $('#qcl').onchange=()=>{const c=cardOf(SELC);if(c){c.pos=$('#qcl').value;save();render()}};
+ $('#qcdef').onclick=()=>{S.qslCard=SELC;save();render()};
+ $('#qcdel').onclick=async()=>{const c=cardOf(SELC);if(!c||!confirm('ลบการ์ด "'+c.n+'" ?'))return;await kvSet('qslimg:'+c.id,null);delete IMG[c.id];S.qslCards=S.qslCards.filter(x=>x!==c);if(S.qslCard===c.id)S.qslCard=(S.qslCards[0]||{}).id||'';SELC=S.qslCard;save();render()};
+ // ---- preview ----
+ let PVQ=null;async function preview(){const sel=$('#qps'),rows=LOG.slice(-40).reverse().filter(r=>r.c);
+  if(sel.options.length!==rows.length+1){sel.replaceChildren(E('option',{value:'',textContent:'ตัวอย่าง (QSO ล่าสุด)'}),...rows.map((r,i)=>E('option',{value:i,textContent:r.c+' · '+r.d+' '+(r.t||'').slice(0,5)+' · '+(r.m||'')+(r.pm==='SAT'?' · '+r.sat:'')})));sel._rows=rows}
+  const r=PVQ||sample(),c=await card(r,SELC||S.qslCard);$('#qpi').src=c.toDataURL('image/jpeg',.85);$('#qpn').textContent=c.width+' × '+c.height+' px · '+(cardOf(SELC||S.qslCard)?'การ์ด '+cardOf(SELC||S.qslCard).n:'พื้นหลังสำเร็จรูป')}
+ $('#qps').onchange=e=>{const rows=e.target._rows||[];PVQ=e.target.value===''?null:rows[+e.target.value];preview()};
+ // ---- Gmail ----
+ const G=$('#qgm'),A=$('#qgp'),SJ=$('#qgsj'),TX=$('#qgtx');G.value=S.qslMail||'';A.value=S.qslPw||'';SJ.value=S.qslSubj||DEF_SUBJ;TX.value=S.qslText||DEF_TEXT;
+ {const e0=document.querySelector('.pwe .eye[data-pw="qzp"]'),b=$('#pq .eye');if(e0)b.innerHTML=e0.innerHTML;b.onclick=()=>{A.type=A.type==='password'?'text':'password'}}
+ G.onchange=()=>{S.qslMail=G.value.trim();save()};A.onchange=()=>{S.qslPw=A.value.replace(/\s+/g,'');A.value=S.qslPw;save()};SJ.onchange=()=>{S.qslSubj=SJ.value;save()};TX.onchange=()=>{S.qslText=TX.value;save()};
+ $('#qgrs').onclick=()=>{SJ.value=DEF_SUBJ;TX.value=DEF_TEXT;delete S.qslSubj;delete S.qslText;save()};
+ const gs=t=>{$('#qgs').textContent=t};
+ // ---- e-mail address from QRZ ----
+ async function qrzEmail(call){if(!S.qu)throw new Error('ยังไม่ได้ใส่บัญชี QRZ ในตั้งค่า');
+  for(let k=0;k<2;k++){if(!qzKey)await qrzLogin();const g=await qrzReq('s='+qzKey+';callsign='+encodeURIComponent(call));const er=g('Error');
+   if(/session|invalid key|timeout/i.test(er||'')&&!k){qzKey='';continue}if(er&&/not found/i.test(er))return{e:''};return{e:(g('email')||'').trim(),n:(g('fname')||'').trim()}}return{e:''}}
+ // ---- bridge (ws://localhost:7374) ----
+ const Q={ws:null,id:0,wait:{},ver:''};
+ const open=()=>new Promise(res=>{if(Q.ws&&Q.ws.readyState===1)return res(true);let ws;try{ws=new WebSocket('ws://localhost:7374')}catch(_){return res(false)}Q.ws=ws;const t=setTimeout(()=>res(false),3000);
+  ws.onopen=()=>{clearTimeout(t);res(true)};ws.onmessage=e=>{let m;try{m=JSON.parse(e.data)}catch(_){return}if(m.t==='v')Q.ver=m.v||'';else if(m.t==='mail'){const f=Q.wait[m.id];if(f){delete Q.wait[m.id];f(m)}}};ws.onclose=()=>{Q.ver=''};ws.onerror=()=>{clearTimeout(t);res(false)}});
+ async function mailSend(o){if(!await open())return{ok:false,err:'ต่อตัวเชื่อม wsjtx-bridge ไม่ได้ (เปิดอยู่ไหม?)'};await new Promise(r=>setTimeout(r,150));if(Q.ver&&Q.ver<'1.2')return{ok:false,err:'ตัวเชื่อมรุ่นเก่า · ติดตั้งชุดใหม่ (v1.2)'};
+  return new Promise(res=>{const id=++Q.id;Q.wait[id]=res;Q.ws.send(JSON.stringify(Object.assign({c:'mail',id,user:S.qslMail,pass:S.qslPw,from_name:(me().call||'').toUpperCase()+(me().name?' '+me().name:'')},o)));setTimeout(()=>{if(Q.wait[id]){delete Q.wait[id];res({ok:false,err:'หมดเวลา'})}},60000)})}
+ const fill=(t,r,nm)=>t.replace(/\{(\w+)\}/g,(a,k)=>({CALL:(r.c||'').toUpperCase(),NAME:nm?nm+' ':'',DATE:r.d||'',TIME:(r.t||'').slice(0,5),MHZ:mhz(r),BAND:r.b||'',MODE:r.m||'',RST:r.rs||'',SAT:r.pm==='SAT'&&r.sat?' via '+r.sat:'',MYCALL:(me().call||'').toUpperCase(),MYNAME:me().name||''})[k]??a);
+ const b64=c=>c.toDataURL('image/jpeg',.88).split(',')[1];
+ $('#qgt').onclick=async()=>{S.qslMail=G.value.trim();S.qslPw=A.value.replace(/\s+/g,'');save();if(!S.qslMail||!S.qslPw){gs('ใส่ Gmail และ App Password ก่อน');return}gs('กำลังส่งอีเมลทดสอบ ...');
+  const r=sample(),x=await mailSend({test:1,subject:'[TEST] '+fill(S.qslSubj||DEF_SUBJ,r,''),text:fill(S.qslText||DEF_TEXT,r,''),img:b64(await card(r)),fname:'QSL_TEST.jpg'});gs(x.ok?'✓ ส่งแล้ว ตรวจกล่องจดหมาย '+S.qslMail:'✗ '+(x.err||'ไม่ผ่าน'))};
+ // ---- QSO list + sending ----
+ let FLT='todo';const PICK=new Set();
+ document.querySelectorAll('#qflt button').forEach(b=>b.onclick=()=>{FLT=b.dataset.f;document.querySelectorAll('#qflt button').forEach(x=>x.classList.toggle('pri',x===b));list()});
+ const stTxt=r=>r.qsl==='ok'?'✓ ส่งแล้ว '+(r.qsld||''):r.qsl==='noemail'?'ไม่มีอีเมล':r.qsl==='err'?'✗ '+(r.qsle||'ไม่ผ่าน'):'—';
+ function list(){const rows=LOG.slice().reverse().filter(r=>r.c&&(FLT==='all'||!r.qsl)).slice(0,200);
+  $('#qlist').replaceChildren(...(rows.length?rows.map(r=>{const d=E('label',{className:'qli'+(r.qsl==='ok'?' ok':'')}),cb=E('input',{type:'checkbox'});cb.checked=PICK.has(r);cb.onchange=()=>{cb.checked?PICK.add(r):PICK.delete(r);$('#qsgo').textContent='ส่ง QSL ที่เลือก ('+PICK.size+')'};
+   d.append(cb,E('b',{textContent:r.c}),E('span',{textContent:r.d+' '+(r.t||'').slice(0,5)}),E('span',{textContent:(r.b||'')+' '+(r.m||'')+(r.pm==='SAT'?' · '+r.sat:'')}),E('span',{className:'qls',textContent:stTxt(r)}));
+   const v=E('button',{className:'sm',textContent:'ดู',title:'ดูการ์ดของ QSO นี้'});v.onclick=e=>{e.preventDefault();PVQ=r;preview();$('#qpi').scrollIntoView({behavior:'smooth',block:'center'})};d.append(v);return d}):[E('div',{className:'mu',textContent:FLT==='todo'?'ส่ง QSL ครบทุก QSO แล้ว':'ยังไม่มี QSO'})]));
+  $('#qsgo').textContent='ส่ง QSL ที่เลือก ('+PICK.size+')'}
+ $('#qsall').onclick=()=>{const rows=LOG.slice().reverse().filter(r=>r.c&&(FLT==='all'||!r.qsl)).slice(0,200);const all=rows.every(r=>PICK.has(r));rows.forEach(r=>all?PICK.delete(r):PICK.add(r));list()};
+ let RUN=0;
+ async function sendQsl(rows){if(RUN)return;const out=t=>{$('#qsres').textContent=t;if(typeof lmsg==='function')lmsg(t)};
+  if(!S.qslMail||!S.qslPw){out('QSL: ใส่ Gmail และ App Password ในหน้า QSL ก่อน');return}
+  RUN=1;let ok=0,no=0,bad=0,skip=0;
+  try{for(let i=0;i<rows.length;i++){const r=rows[i];if(r.qsl==='ok'){skip++;continue}out('กำลังส่ง QSL '+(i+1)+'/'+rows.length+' · '+r.c);
+   let e=r.qslto||'',nm='';try{if(!e){const q=await qrzEmail((r.c||'').trim());e=q.e;nm=q.n||''}}catch(x){out('QSL: ค้น QRZ ไม่ได้ · '+(typeof qrzWhy==='function'?qrzWhy(x):x.message));bad++;break}
+   if(!e){r.qsl='noemail';no++;saveLog();continue}
+   const x=await mailSend({to:e,subject:fill(S.qslSubj||DEF_SUBJ,r,nm),text:fill(S.qslText||DEF_TEXT,r,nm),img:b64(await card(r)),fname:'QSL_'+(me().call||'').toUpperCase().replace(/\W/g,'_')+'_'+(r.c||'').toUpperCase().replace(/\W/g,'_')+'_'+(r.d||'').replace(/-/g,'')+'.jpg'});
+   if(x.ok){r.qsl='ok';r.qslto=e;r.qsld=new Date().toISOString().slice(0,10);ok++}else{r.qsl='err';r.qsle=x.err||'';bad++;if(/login|App Password|ตัวเชื่อม/i.test(x.err||'')){saveLog();out('QSL: '+x.err);break}}
+   saveLog();PICK.delete(r);if(!P.hidden){list();station()}await new Promise(z=>setTimeout(z,4000))}}
+  finally{RUN=0;out('QSL: ส่งแล้ว '+ok+(no?' · ไม่มีอีเมลใน QRZ '+no:'')+(bad?' · ไม่ผ่าน '+bad:'')+(skip?' · เคยส่งแล้ว (ข้าม) '+skip:''));if(!P.hidden){list();station()}}}
+ $('#qsgo').onclick=()=>{const rows=[...PICK];if(!rows.length){$('#qsres').textContent='ติ๊กเลือก QSO ก่อน';return}if(!confirm('ส่ง QSL Card ทางอีเมล '+rows.length+' QSO ?'))return;sendQsl(rows)};
+ // Dashboard › QSO ล่าสุด: "ส่ง QSL" for the ticked rows
+ {const after=$('#qbup')||$('#qfill');if(after&&!$('#qslsend')){after.insertAdjacentHTML('afterend','<button id="qslsend" class="sm" title="ส่ง QSL Card ทางอีเมลให้ QSO ที่ติ๊กเลือก (อีเมลจาก QRZ)">ส่ง QSL (อีเมล)</button>');
+  $('#qslsend').onclick=()=>{const rows=LOG.filter(r=>typeof SEL!=='undefined'&&SEL.has(r));if(!rows.length){lmsg('QSL: ติ๊กเลือก QSO ที่จะส่งก่อน');return}if(!confirm('ส่ง QSL Card ทางอีเมล '+rows.filter(r=>r.qsl!=='ok').length+' QSO ?'))return;sendQsl(rows)}}}
+ function render(){station();cards();preview();list()}
+})();
+// ===== HLVhf: QRZ.com and QSL sit at the bottom of the side bar, just above Settings (HLHf does this in the connection block) =====
+(()=>{if(!/^HLVhf/.test(document.title))return;const q=$('#qrzl'),st=$('#nav button[data-t=p2]');if(!q||!st||q.parentNode!==st.parentNode)return;st.before(...[q,$('#nqsl')].filter(Boolean));q.classList.add('qrzlow')})();
 
 </script>
 <!--VOICE-ADDON-END-->
