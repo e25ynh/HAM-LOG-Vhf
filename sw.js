@@ -1,5 +1,5 @@
-/* HLVhf = HAM LOG VHF service worker — build 1.2.1 · 2026-11-03 f75052c0 */
-const CACHE='hlv-f75052c0';
+/* HLVhf = HAM LOG VHF service worker — build 1.2.2 · 2026-11-03 3efea00b */
+const CACHE='hlv-3efea00b';
 const CORE=['./','index.html','manifest.webmanifest','icons/icon-192.png','icons/icon-512.png','icons/icon-maskable-512.png','icons/apple-touch-icon.png'];
 self.addEventListener('install',e=>{e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE)));});
 self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==CACHE&&k.startsWith('hlv-')).map(k=>caches.delete(k)))).then(()=>self.clients.claim()));});
