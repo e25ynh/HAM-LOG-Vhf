@@ -872,7 +872,7 @@ const R={};for(const k in M)R[M[k]]=k;
 let S={tone:700,auto:true,ch:'mix',dev:'',my:{},ps:[],cur:'',mode:'cq',gr:'',rs:'599',tt:'CQ CQ DE HS0ABC K'};
 try{Object.assign(S,JSON.parse(localStorage.getItem('hlvc')||'{}'))}catch(e){}
 if(S.my&&S.my.wx==='RAIN')S.my.wx='RAINY';
-const VER='1.2 · 2026-11-02';
+const VER='1.2.1 · 2026-11-03';
 const save=()=>{try{localStorage.setItem('hlvc',JSON.stringify(S))}catch(e){}};
 // ---- editions (รุ่น): Standard=VOICE · Plus=+CW · Pro=+DIGITAL · Ultimate=+SATELLITE ; unlocked by a signed key bound to the callsign ----
 const ED_PUB={"kty":"EC","x":"hkg1ObxqZdpiZk-OK94gIz_Dpkas1auP51b0hriWZDI","y":"uPCAm2i8pWxZ1l1G1659VyDVwU3OmZixiiDqeWo5VqU","crv":"P-256"};
@@ -1310,7 +1310,7 @@ async function hqLookup(c){
   let g=(l.grid||'').trim();if(!g&&isFinite(la)&&isFinite(lo)&&(la||lo))g=maiden(la,lo,6);
   if(g)g=g.slice(0,4).toUpperCase()+g.slice(4).toLowerCase();
   hqNote='';$('#hqst').textContent='';
-  return HQ[c]={g,n:(j.name||j.nick||'').trim(),q:(j.qth||'').trim(),co:(j.country||'').trim(),dx:j.dxcc?String(j.dxcc):'',im:(j.picture||'').trim()}
+  return HQ[c]={g,n:(j.name||j.nick||'').trim(),q:(j.qth||'').trim(),co:(j.country||'').trim(),dx:j.dxcc?String(j.dxcc):'',im:(j.picture||'').trim(),em:(j.email||'').trim()}
  }catch(e){hqDead=e&&e.hqlogin?Date.now()+3.6e6:e&&e.hqwait?Date.now()+e.hqwait:Date.now()+30000;hqTok='';
   hqNote=e&&e.hqlogin||e&&e.hqwait||(e&&e.message&&!/fetch|network/i.test(e.message))?e.message:'เชื่อมต่อ HamQTH ไม่ได้ (ไม่มีเน็ต หรือเว็บไม่อนุญาตการเรียกจากหน้านี้)';
   $('#hqst').textContent=hqNote;upd();return undefined}}
@@ -1908,7 +1908,8 @@ const GR={
  VOICE:{n:'VOICE',modes:[['FM','FM'],['SSB','SSB'],['LSB','LSB'],['USB','USB'],['CW','CW'],['DV','Digital Voice'],['D-STAR','D-STAR'],['VOIP','VoIP']],all:['FM','SSB','LSB','USB','AM','DV','D-STAR','VOIP','C4FM','DMR']},
  DIGITAL:{n:'DIGITAL',modes:[['FT8','FT8'],['FT4','FT4']],all:['FT8','FT4','JS8','JT65','PSK31','RTTY','SSTV','JT9','JT4','MSK144','Q65','FST4','FST4W','WSPR','PSK63','PSK125','OLIVIA','CONTESTIA','MFSK','HELL','THOR','FSK441','ISCAT','PACKET','VARA','ARDOP']},
  SAT:{n:'SATELLITE',modes:[],all:[]}};
-const inG=(r,g)=>g==='SAT'?r.pm==='SAT':(r.pm!=='SAT'&&(GR[g].all.includes(mdKey(r.m))||(g==='VOICE'&&r.pg==='V'))); // r.pg='V': CW logged on the VOICE page stays there
+const isSat=r=>r.pm==='SAT'||(!/^HLVhf/.test(document.title)&&(r.b==='70cm'||r.brx==='70cm')); // HLHf: 70cm QSOs are satellite QSOs
+const inG=(r,g)=>g==='SAT'?isSat(r):(!isSat(r)&&(GR[g].all.includes(mdKey(r.m))||(g==='VOICE'&&r.pg==='V'))); // r.pg='V': CW logged on the VOICE page stays there
 const grOf=r=>inG(r,'SAT')?'SAT':inG(r,'VOICE')?'VOICE':inG(r,'DIGITAL')?'DIGITAL':'CW';
 const homeRow=r=>grOf(r)==='CW';
 let QG='VOICE',QM='FM';
@@ -3046,12 +3047,13 @@ if(navigator.mediaDevices)devs();
 .qct.add{align-items:center;justify-content:center;border-style:dashed;min-height:120px;color:#93c5fd}.qct.add b{font-size:34px;line-height:1}
 .qrow{display:flex;gap:10px;flex-wrap:wrap;align-items:end}.qrow label{display:grid;gap:4px;font-size:12.5px;color:var(--mu)}.qful{display:grid;gap:4px;font-size:12.5px;color:var(--mu)}.qful textarea,.qful input{width:100%;font:13px "IBM Plex Mono",monospace}
 .qpv img{width:100%;height:auto;border-radius:10px;display:block;background:var(--rs);min-height:120px}
-.qlist{display:grid;gap:4px;max-height:420px;overflow:auto}.qli{display:grid;grid-template-columns:22px minmax(80px,1fr) 130px minmax(90px,1fr) minmax(90px,1.2fr) auto;gap:8px;align-items:center;padding:4px 8px;border-radius:8px;border:1px solid var(--ln);font-size:13px}
+.qlist{display:grid;gap:4px;max-height:420px;overflow:auto}.qli{display:grid;grid-template-columns:22px minmax(80px,1fr) 130px minmax(90px,1fr) minmax(90px,1.2fr) auto auto auto;gap:8px;align-items:center;padding:4px 8px;border-radius:8px;border:1px solid var(--ln);font-size:13px}
 .qli b{font-family:"IBM Plex Mono",monospace}.qli.ok .qls{color:#22c55e}.qli .qls{color:var(--mu);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 #nav button[data-t=pq]{--nc:#fbbf24}
 .qstn{margin-top:10px;padding-top:10px;border-top:1px solid var(--bd,#2a3550);display:grid;gap:6px}.qstn .qrow label{flex:1 1 140px}.qstn .qs-de,.qstn .qs-ant,.qstn .qs-qth{flex-basis:220px}.qstn .qs-pwr{flex:0 1 90px}.qstn input{width:100%}
 .qapl{display:inline-flex;align-items:center;text-decoration:none;color:inherit;border:1px solid var(--ln,#8884);border-radius:8px;padding:6px 10px;font-size:12.5px}
 #nav #qrzl.qrzlow{margin-top:auto}#nav #qrzl.qrzlow~button[data-t=p2]{margin-top:0}
+.qli .qem{width:170px;font:12px "IBM Plex Mono",monospace;padding:3px 6px;border-radius:6px;border:1px solid var(--ln,#8885);background:transparent;color:inherit}
 
 </style>
 <script>
@@ -5610,13 +5612,13 @@ if(!/^HLVhf/.test(document.title))document.documentElement.classList.add('hlhf')
    '<div class="qrow"><label>ชื่อการ์ด<input id="qcn" spellcheck="false"></label><label>วางข้อมูล QSO<select id="qcl">'+LAY.map(([v,t])=>'<option value="'+v+'">'+t+'</option>').join('')+'</select></label></div>'+
    '<div id="qstn" class="qstn"><div class="mu">ข้อมูลสถานีบนการ์ด <span style="font-size:11px">(ใช้กับแบบ “สร้างตาราง + กรอบข้อมูลสถานี”)</span></div><div class="qrow">'+[['de','TNX QSO, VY 73 DE','ชื่อ หรือ Callsign'],['rig','RIG','เช่น IC-9700'],['pwr','PWR (W)','เช่น 50'],['ant','ANT','เช่น X-Quad 2M/70cm'],['qth','QTH','เช่น Sattahip, Chonburi']].map(([k,l,ph])=>'<label class="qs-'+k+'">'+l+'<input data-st="'+k+'" spellcheck="false" placeholder="'+ph+'"></label>').join('')+'</div></div>'+
 '<div class="qrow"><button id="qcdef" class="sm">ใช้การ์ดนี้ส่ง QSL</button><button id="qcdel" class="sm sxred">ลบการ์ดนี้</button><span id="qcst" class="mu"></span></div></div>'+
-   '<div class="pn qpv"><div class="sxh"><h2>ตัวอย่าง</h2><label class="mu">QSO <select id="qps"></select></label></div><img id="qpi" alt="ตัวอย่าง QSL"><div id="qpn" class="mu"></div></div></div>'+
+   '<div class="pn qpv"><div class="sxh"><h2>ตัวอย่าง</h2><label class="mu">QSO <select id="qps"></select></label></div><img id="qpi" alt="ตัวอย่าง QSL"><div class="qrow"><div id="qpn" class="mu" style="flex:1"></div><button id="qdj" class="sm" title="บันทึกการ์ดของ QSO นี้เป็นไฟล์รูป">⬇ JPG</button><button id="qdp" class="sm" title="บันทึกเป็น PNG (คมชัดสุด ไฟล์ใหญ่กว่า)">⬇ PNG</button></div></div></div>'+
   '<div class="qsg"><div class="pn"><div class="sxh"><h2>ส่งทาง Gmail</h2><span id="qgs" class="mu"></span></div>'+
    '<div class="qrow"><label>Gmail<input id="qgm" type="email" autocomplete="off" spellcheck="false" placeholder="you@gmail.com"></label><label>App Password<span class="pwe"><input id="qgp" type="password" autocomplete="off" spellcheck="false" placeholder="16 ตัว"><button type="button" class="eye" title="แสดง / ซ่อน">👁</button></span></label><button id="qgt" class="sm">ทดสอบ (ส่งหาตัวเอง)</button><a class="sm qapl" href="https://myaccount.google.com/apppasswords" target="_blank" rel="noopener" title="เปิดหน้า รหัสผ่านของแอป ของ Google (ต้องเปิดการยืนยันแบบ 2 ขั้นตอนก่อน)">สร้าง App Password ↗</a></div>'+
    '<label class="qful">หัวเรื่อง<input id="qgsj" spellcheck="false"></label><label class="qful">ข้อความ<textarea id="qgtx" rows="7" spellcheck="false"></textarea></label>'+
    '<div class="mu" style="font-size:12px">ตัวแปร: {CALL} {NAME} {DATE} {TIME} {MHZ} {BAND} {MODE} {RST} {SAT} {MYCALL} {MYNAME} · <a href="javascript:void 0" id="qgrs">คืนค่าตั้งต้น</a> · App Password สร้างที่ Google Account › Security › 2-Step Verification › App passwords</div></div>'+
    '<div class="pn"><div class="sxh"><h2>QSO ที่จะส่ง QSL</h2><span class="seg" id="qflt"><button data-f="todo" class="pri">ยังไม่ได้ส่ง</button><button data-f="all">ทั้งหมด</button></span></div>'+
-   '<div class="qlist" id="qlist"></div><div class="qrow"><button id="qsall" class="sm">เลือกทั้งหมด</button><button id="qsgo" class="sm pri">ส่ง QSL ที่เลือก</button><span id="qsres" class="mu"></span></div></div></div></section>');
+   '<div class="qlist" id="qlist"></div><div class="qrow"><button id="qsdl" class="sm" title="บันทึกการ์ดของ QSO ที่ติ๊กเป็นไฟล์ JPG ทีละไฟล์">⬇ บันทึกรูปที่เลือก</button><button id="qsall" class="sm">เลือกทั้งหมด</button><button id="qsgo" class="sm pri">ส่ง QSL ที่เลือก</button><span id="qsres" class="mu"></span></div></div></div></section>');
  const P=$('#pq'),nb=$('#nqsl');
  const _tab=tab;tab=function(id){if(id==='pq'){_tab('p0');$('#p0').hidden=true;P.hidden=false;document.querySelectorAll('#nav button').forEach(b=>b.classList.toggle('pri',b===nb));CURTAB='pq';render();return}P.hidden=true;return _tab.apply(this,arguments)};
  nb.onclick=()=>tab('pq');
@@ -5712,6 +5714,10 @@ if(!/^HLVhf/.test(document.title))document.documentElement.classList.add('hlhf')
  let PVQ=null;async function preview(){const sel=$('#qps'),rows=LOG.slice(-40).reverse().filter(r=>r.c);
   if(sel.options.length!==rows.length+1){sel.replaceChildren(E('option',{value:'',textContent:'ตัวอย่าง (QSO ล่าสุด)'}),...rows.map((r,i)=>E('option',{value:i,textContent:r.c+' · '+r.d+' '+(r.t||'').slice(0,5)+' · '+(r.m||'')+(r.pm==='SAT'?' · '+r.sat:'')})));sel._rows=rows}
   const r=PVQ||sample(),c=await card(r,SELC||S.qslCard);$('#qpi').src=c.toDataURL('image/jpeg',.85);$('#qpn').textContent=c.width+' × '+c.height+' px · '+(cardOf(SELC||S.qslCard)?'การ์ด '+cardOf(SELC||S.qslCard).n:'พื้นหลังสำเร็จรูป')}
+ // ---- save cards as image files ----
+ const qslName=(r,ext)=>'QSL_'+(me().call||'').toUpperCase().replace(/\W/g,'_')+'_'+(r.c||'').toUpperCase().replace(/\W/g,'_')+'_'+(r.d||'').replace(/-/g,'')+'_'+(r.t||'').replace(/:/g,'').slice(0,4)+'.'+ext;
+ async function saveCard(r,png){const c=await card(r,SELC||S.qslCard);const b=await new Promise(z=>c.toBlob(z,png?'image/png':'image/jpeg',png?undefined:.92));if(!b)return;const u=URL.createObjectURL(b),a=E('a',{href:u,download:qslName(r,png?'png':'jpg')});document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),5000)}
+ $('#qdj').onclick=()=>saveCard(PVQ||sample(),false);$('#qdp').onclick=()=>saveCard(PVQ||sample(),true);
  $('#qps').onchange=e=>{const rows=e.target._rows||[];PVQ=e.target.value===''?null:rows[+e.target.value];preview()};
  // ---- Gmail ----
  const G=$('#qgm'),A=$('#qgp'),SJ=$('#qgsj'),TX=$('#qgtx');G.value=S.qslMail||'';A.value=S.qslPw||'';SJ.value=S.qslSubj||DEF_SUBJ;TX.value=S.qslText||DEF_TEXT;
@@ -5720,9 +5726,15 @@ if(!/^HLVhf/.test(document.title))document.documentElement.classList.add('hlhf')
  $('#qgrs').onclick=()=>{SJ.value=DEF_SUBJ;TX.value=DEF_TEXT;delete S.qslSubj;delete S.qslText;save()};
  const gs=t=>{$('#qgs').textContent=t};
  // ---- e-mail address from QRZ ----
- async function qrzEmail(call){if(!S.qu)throw new Error('ยังไม่ได้ใส่บัญชี QRZ ในตั้งค่า');
-  for(let k=0;k<2;k++){if(!qzKey)await qrzLogin();const g=await qrzReq('s='+qzKey+';callsign='+encodeURIComponent(call));const er=g('Error');
-   if(/session|invalid key|timeout/i.test(er||'')&&!k){qzKey='';continue}if(er&&/not found/i.test(er))return{e:''};return{e:(g('email')||'').trim(),n:(g('fname')||'').trim()}}return{e:''}}
+ let EMNOTE='';
+ async function qrzEmail(call){let e='',n='';EMNOTE='';
+  if(S.qu){for(let k=0;k<2;k++){if(!qzKey)await qrzLogin();const g=await qrzReq('s='+qzKey+';callsign='+encodeURIComponent(call));const er=g('Error');
+    if(/session|invalid key|timeout/i.test(er||'')&&!k){qzKey='';continue}if(!(er&&/not found/i.test(er))){e=(g('email')||'').trim();n=(g('fname')||'').trim()}break}
+   if(!e&&typeof qzSub!=='undefined'&&/non-subscriber/i.test(String(qzSub||'')))EMNOTE='บัญชี QRZ แบบฟรีไม่ได้รับอีเมลจาก QRZ (ต้องสมัคร XML Logbook Data)'}
+  if(!e&&typeof hqOn==='function'&&hqOn()&&typeof hqLookup==='function'){try{if(typeof HQ!=='undefined'&&HQ[call]&&!('em' in HQ[call]))delete HQ[call];const h=await hqLookup(call);if(h&&h.em){e=h.em;n=n||h.n||''}}catch(_){}}
+  else if(!e&&EMNOTE)EMNOTE+=' · ใส่บัญชี HamQTH (ฟรี) ที่ ตั้งค่า เพื่อค้นอีเมลจาก HamQTH แทน'
+  if(!S.qu&&!(typeof hqOn==='function'&&hqOn()))throw new Error('ยังไม่ได้ใส่บัญชี QRZ หรือ HamQTH ในตั้งค่า');
+  return{e,n}}
  // ---- bridge (ws://localhost:7374) ----
  const Q={ws:null,id:0,wait:{},ver:''};
  const open=()=>new Promise(res=>{if(Q.ws&&Q.ws.readyState===1)return res(true);let ws;try{ws=new WebSocket('ws://localhost:7374')}catch(_){return res(false)}Q.ws=ws;const t=setTimeout(()=>res(false),3000);
@@ -5740,7 +5752,8 @@ if(!/^HLVhf/.test(document.title))document.documentElement.classList.add('hlhf')
  function list(){const rows=LOG.slice().reverse().filter(r=>r.c&&(FLT==='all'||!r.qsl)).slice(0,200);
   $('#qlist').replaceChildren(...(rows.length?rows.map(r=>{const d=E('label',{className:'qli'+(r.qsl==='ok'?' ok':'')}),cb=E('input',{type:'checkbox'});cb.checked=PICK.has(r);cb.onchange=()=>{cb.checked?PICK.add(r):PICK.delete(r);$('#qsgo').textContent='ส่ง QSL ที่เลือก ('+PICK.size+')'};
    d.append(cb,E('b',{textContent:r.c}),E('span',{textContent:r.d+' '+(r.t||'').slice(0,5)}),E('span',{textContent:(r.b||'')+' '+(r.m||'')+(r.pm==='SAT'?' · '+r.sat:'')}),E('span',{className:'qls',textContent:stTxt(r)}));
-   const v=E('button',{className:'sm',textContent:'ดู',title:'ดูการ์ดของ QSO นี้'});v.onclick=e=>{e.preventDefault();PVQ=r;preview();$('#qpi').scrollIntoView({behavior:'smooth',block:'center'})};d.append(v);return d}):[E('div',{className:'mu',textContent:FLT==='todo'?'ส่ง QSL ครบทุก QSO แล้ว':'ยังไม่มี QSO'})]));
+   if(r.qsl==='noemail'||r.qsl==='err'||r.qslto){const em=E('input',{className:'qem',type:'email',placeholder:'อีเมลคู่สถานี',value:r.qslto||'',title:'ใส่อีเมลเองได้ ถ้า QRZ / HamQTH ไม่มี'});em.onclick=e=>e.preventDefault();em.onchange=()=>{const v=em.value.trim();r.qslto=v;if(v&&r.qsl==='noemail')r.qsl='';saveLog();station()};d.append(em)}
+   const v=E('button',{className:'sm',textContent:'ดู',title:'ดูการ์ดของ QSO นี้'});v.onclick=e=>{e.preventDefault();PVQ=r;preview();$('#qpi').scrollIntoView({behavior:'smooth',block:'center'})};const dl=E('button',{className:'sm',textContent:'⬇',title:'บันทึกการ์ดของ QSO นี้เป็น JPG'});dl.onclick=e=>{e.preventDefault();saveCard(r,false)};d.append(v,dl);return d}):[E('div',{className:'mu',textContent:FLT==='todo'?'ส่ง QSL ครบทุก QSO แล้ว':'ยังไม่มี QSO'})]));
   $('#qsgo').textContent='ส่ง QSL ที่เลือก ('+PICK.size+')'}
  $('#qsall').onclick=()=>{const rows=LOG.slice().reverse().filter(r=>r.c&&(FLT==='all'||!r.qsl)).slice(0,200);const all=rows.every(r=>PICK.has(r));rows.forEach(r=>all?PICK.delete(r):PICK.add(r));list()};
  let RUN=0;
@@ -5753,7 +5766,8 @@ if(!/^HLVhf/.test(document.title))document.documentElement.classList.add('hlhf')
    const x=await mailSend({to:e,subject:fill(S.qslSubj||DEF_SUBJ,r,nm),text:fill(S.qslText||DEF_TEXT,r,nm),img:b64(await card(r)),fname:'QSL_'+(me().call||'').toUpperCase().replace(/\W/g,'_')+'_'+(r.c||'').toUpperCase().replace(/\W/g,'_')+'_'+(r.d||'').replace(/-/g,'')+'.jpg'});
    if(x.ok){r.qsl='ok';r.qslto=e;r.qsld=new Date().toISOString().slice(0,10);ok++}else{r.qsl='err';r.qsle=x.err||'';bad++;if(/login|App Password|ตัวเชื่อม/i.test(x.err||'')){saveLog();out('QSL: '+x.err);break}}
    saveLog();PICK.delete(r);if(!P.hidden){list();station()}await new Promise(z=>setTimeout(z,4000))}}
-  finally{RUN=0;out('QSL: ส่งแล้ว '+ok+(no?' · ไม่มีอีเมลใน QRZ '+no:'')+(bad?' · ไม่ผ่าน '+bad:'')+(skip?' · เคยส่งแล้ว (ข้าม) '+skip:''));if(!P.hidden){list();station()}}}
+  finally{RUN=0;out('QSL: ส่งแล้ว '+ok+(no?' · ไม่มีอีเมล '+no+(EMNOTE?' ('+EMNOTE+')':' (คู่สถานีไม่ได้เปิดเผยอีเมล · ใส่อีเมลเองได้ในรายการ)'):'')+(bad?' · ไม่ผ่าน '+bad:'')+(skip?' · เคยส่งแล้ว (ข้าม) '+skip:''));if(!P.hidden){list();station()}}}
+ $('#qsdl').onclick=async()=>{const rows=[...PICK];if(!rows.length){$('#qsres').textContent='ติ๊กเลือก QSO ก่อน';return}for(let i=0;i<rows.length;i++){$('#qsres').textContent='บันทึกรูป '+(i+1)+'/'+rows.length+' · '+rows[i].c;await saveCard(rows[i],false);await new Promise(z=>setTimeout(z,600))}$('#qsres').textContent='บันทึกรูปแล้ว '+rows.length+' ไฟล์ (โฟลเดอร์ Downloads) · ถ้าเบราว์เซอร์ถาม “ดาวน์โหลดหลายไฟล์” ให้กดอนุญาต'};
  $('#qsgo').onclick=()=>{const rows=[...PICK];if(!rows.length){$('#qsres').textContent='ติ๊กเลือก QSO ก่อน';return}if(!confirm('ส่ง QSL Card ทางอีเมล '+rows.length+' QSO ?'))return;sendQsl(rows)};
  // Dashboard › QSO ล่าสุด: "ส่ง QSL" for the ticked rows
  {const after=$('#qbup')||$('#qfill');if(after&&!$('#qslsend')){after.insertAdjacentHTML('afterend','<button id="qslsend" class="sm" title="ส่ง QSL Card ทางอีเมลให้ QSO ที่ติ๊กเลือก (อีเมลจาก QRZ)">ส่ง QSL (อีเมล)</button>');
