@@ -874,7 +874,7 @@ const R={};for(const k in M)R[M[k]]=k;
 let S={tone:700,auto:true,ch:'mix',dev:'',my:{},ps:[],cur:'',mode:'cq',gr:'',rs:'599',tt:'CQ CQ DE HS0ABC K'};
 try{Object.assign(S,JSON.parse(localStorage.getItem('hlvc')||'{}'))}catch(e){}
 if(S.my&&S.my.wx==='RAIN')S.my.wx='RAINY';
-const VER='1.3.1 · 2026-11-20';
+const VER='1.3.4 · 2026-11-20';
 const save=()=>{try{localStorage.setItem('hlvc',JSON.stringify(S))}catch(e){}};
 // ---- editions (รุ่น): Standard=VOICE · Plus=+CW · Pro=+DIGITAL · Ultimate=+SATELLITE ; unlocked by a signed key bound to the callsign ----
 const ED_PUB={"kty":"EC","x":"hkg1ObxqZdpiZk-OK94gIz_Dpkas1auP51b0hriWZDI","y":"uPCAm2i8pWxZ1l1G1659VyDVwU3OmZixiiDqeWo5VqU","crv":"P-256"};
@@ -1969,7 +1969,7 @@ function expAdif(){
  const n=v=>new TextEncoder().encode(v).length,f=(k,v)=>v?`<${k}:${n(v)}>${v}`:'',me=S.my||{},
   grid=/^[A-R]{2}[0-9]{2}([A-X]{2})?$/i.test(me.loc||'')?me.loc.toUpperCase():'',
   tm=t=>{const a=(t||'').replace(/:/g,'');return a.length===4?a+'00':a},
-  recs=rows.map(r=>[f('STATION_CALLSIGN',me.call),f('MY_GRIDSQUARE',grid),f('CALL',(r.c||'').trim()),f('QSO_DATE',(r.d||'').replace(/-/g,'')),f('TIME_ON',tm(r.t)),f('MODE',adifMode(r.m)),f('SUBMODE',adifSub(r.m)),f('PROP_MODE',r.pm==='SAT'?'SAT':((MD[mdKey(r.m)]||[])[3]||'')),f('SAT_NAME',r.sat),f('SAT_MODE',r.satm),f('FREQ_RX',r.frx),f('BAND_RX',r.brx),f('FREQ',r.f),f('BAND',r.b),f('RST_SENT',(r.rs||'').replace(/N/gi,'9')),f('RST_RCVD',(r.rr||'').replace(/N/gi,'9')),f('NAME',r.n),f('COUNTRY',r.co),f('QTH',r.q),f('GRIDSQUARE',(r.g||'').toUpperCase()),f('DXCC',r.dx),f('COMMENT',r.cm||(r.r1?'D-STAR UR:'+(r.ur||'CQCQCQ')+' RPT1:'+r.r1+' RPT2:'+(r.r2||''):'')),f('APP_'+APPID()+'_UR',r.ur),f('APP_'+APPID()+'_RPT1',r.r1),f('APP_'+APPID()+'_RPT2',r.r2),'<EOR>'].filter(Boolean).join(' '));
+  recs=rows.map(r=>[f('STATION_CALLSIGN',me.call),f('MY_GRIDSQUARE',grid),f('CALL',(r.c||'').trim()),f('QSO_DATE',(r.d||'').replace(/-/g,'')),f('TIME_ON',tm(r.t)),f('MODE',adifMode(r.m)),f('SUBMODE',adifSub(r.m)),f('PROP_MODE',r.pm==='SAT'?'SAT':((MD[mdKey(r.m)]||[])[3]||'')),f('SAT_NAME',r.sat),f('SAT_MODE',r.satm),f('FREQ_RX',r.frx),f('BAND_RX',r.brx),f('FREQ',r.f),f('BAND',r.b),f('RST_SENT',(r.rs||'').replace(/N/gi,'9')),f('RST_RCVD',(r.rr||'').replace(/N/gi,'9')),f('NAME',r.n),f('COUNTRY',r.co),f('QTH',r.q),f('GRIDSQUARE',(r.g||'').toUpperCase()),f('DXCC',r.dx),f('COMMENT_INTL',/[^\x00-\x7f]/.test(r.cm||'')?r.cm:''),f('COMMENT',(typeof asciiCm==='function'?asciiCm(r):r.cm)||(r.r1?'D-STAR UR:'+(r.ur||'CQCQCQ')+' RPT1:'+r.r1+' RPT2:'+(r.r2||''):'')),f('APP_'+APPID()+'_UR',r.ur),f('APP_'+APPID()+'_RPT1',r.r1),f('APP_'+APPID()+'_RPT2',r.r2),'<EOR>'].filter(Boolean).join(' '));
  dl(LOGPFX()+utcNow().slice(0,10).replace(/-/g,'')+'.adi','text/plain','ADIF export from HLVhf = HAM LOG VHF\n<ADIF_VER:5>3.1.4 <PROGRAMID:5>HLVhf <EOH>\n\n'+recs.join('\n')+'\n');
  const miss=rows.filter(r=>!r.f||!r.b).length;lmsg('ส่งออก ADIF '+rows.length+' รายการ'+(miss?'  ⚠ '+miss+' รายการยังไม่มีความถี่/ย่าน Log4OM อาจนำเข้าไม่ได้':''))}
 function expCsv(){
@@ -5576,7 +5576,7 @@ if(!/^HLVhf/.test(document.title))document.documentElement.classList.add('hlhf')
   grid=/^[A-R]{2}[0-9]{2}([A-X]{2})?$/i.test(me.loc||'')?me.loc.toUpperCase():'',t=(r.t||'').replace(/:/g,''),T=t.length===4?t+'00':t;
   return[f('STATION_CALLSIGN',(me.call||'').toUpperCase()),f('MY_GRIDSQUARE',grid),f('CALL',(r.c||'').trim().toUpperCase()),f('QSO_DATE',(r.d||'').replace(/-/g,'')),f('TIME_ON',T),f('MODE',adifMode(r.m)),f('SUBMODE',adifSub(r.m)),
    f('PROP_MODE',r.pm==='SAT'?'SAT':((MD[mdKey(r.m)]||[])[3]||'')),f('SAT_NAME',r.sat),f('SAT_MODE',r.satm),f('FREQ',r.f),f('BAND',r.b),f('FREQ_RX',r.frx),f('BAND_RX',r.brx),
-   f('RST_SENT',(r.rs||'').replace(/N/gi,'9')),f('RST_RCVD',(r.rr||'').replace(/N/gi,'9')),f('NAME',r.n),f('QTH',r.q),f('GRIDSQUARE',(r.g||'').toUpperCase()),f('COMMENT',r.cm),'<EOR>'].filter(Boolean).join(' ')}
+   f('RST_SENT',(r.rs||'').replace(/N/gi,'9')),f('RST_RCVD',(r.rr||'').replace(/N/gi,'9')),f('NAME',r.n),f('QTH',r.q),f('GRIDSQUARE',(r.g||'').toUpperCase()),f('COMMENT',typeof asciiCm==='function'?asciiCm(r):r.cm),f('COMMENT_INTL',/[^\x00-\x7f]/.test(r.cm||'')?r.cm:''),'<EOR>'].filter(Boolean).join(' ')}
  function open(){if(Q.ws&&Q.ws.readyState<2)return;let ws;try{ws=new WebSocket('ws://localhost:7374')}catch(_){return}Q.ws=ws;
   ws.onmessage=e=>{let m;try{m=JSON.parse(e.data)}catch(_){return}if(m.t==='v'){Q.ver=m.v||'';stat()}else if(m.t==='qrz'){const f=Q.wait[m.id];if(f){delete Q.wait[m.id];f(m.r||{})}}};
   ws.onclose=()=>{Q.ver='';stat()};ws.onerror=()=>{}}
@@ -5804,6 +5804,7 @@ if(!/^HLVhf/.test(document.title))document.documentElement.classList.add('hlhf')
  {const after=$('#qbup')||$('#qfill');if(after&&!$('#qslsend')&&MAILON()){after.insertAdjacentHTML('afterend','<button id="qslsend" class="sm" title="ส่ง QSL Card ทางอีเมลให้ QSO ที่ติ๊กเลือก (อีเมลจาก QRZ)">ส่ง QSL (อีเมล)</button>');
   $('#qslsend').onclick=()=>{const rows=LOG.filter(r=>typeof SEL!=='undefined'&&SEL.has(r));if(!rows.length){lmsg('QSL: ติ๊กเลือก QSO ที่จะส่งก่อน');return}if(!confirm('ส่ง QSL Card ทางอีเมล '+rows.filter(r=>r.qsl!=='ok').length+' QSO ?'))return;sendQsl(rows)}}}
  function render(){station();cards();rigs();preview();list()}
+ window.qslCard=card;window.qslName=qslName;window.QSLPICK=PICK;
 })();
 // ===== HLVhf: QRZ.com and QSL sit at the bottom of the side bar, just above Settings (HLHf does this in the connection block) =====
 (()=>{if(!/^HLVhf/.test(document.title))return;const q=$('#qrzl'),st=$('#nav button[data-t=p2]');if(!q||!st||q.parentNode!==st.parentNode)return;st.before(...[q,$('#nqsl')].filter(Boolean));q.classList.add('qrzlow')})();
@@ -5861,7 +5862,7 @@ nav button[data-t=pnc]{--nc:#f59e0b}
 .ncrd{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
 .ncch{display:inline-flex;align-items:center;gap:2px;background:var(--rs);border:1px solid var(--ln);border-radius:10px;padding:3px 4px;cursor:pointer;font-size:13px}
 .ncch b{font-weight:500;padding:2px 4px}
-.ncch.on{background:#1d6b45;border-color:#1d6b45;color:#fff}
+.ncch{border-color:var(--rc);color:var(--rc);border-width:2px}.ncch.on{background:var(--rc);border-color:var(--rc);color:#fff}
 .ncl{background:none;border:0;color:inherit;opacity:.55;cursor:pointer;font:inherit;padding:0 3px}.ncl:hover{opacity:1}
 .ncin{display:grid;grid-template-columns:minmax(150px,1.2fr) 64px auto minmax(130px,.9fr) minmax(130px,1fr) minmax(110px,1.4fr) auto;gap:8px}
 #ncc{font-size:18px;font-family:ui-monospace,Menlo,Consolas,monospace;letter-spacing:.04em}
@@ -5871,7 +5872,7 @@ nav button[data-t=pnc]{--nc:#f59e0b}
 .nct{width:100%;border-collapse:collapse;font-size:13.5px}
 .nct th{text-align:left;color:var(--mu);font-weight:500;padding:4px 6px;border-bottom:1px solid var(--ln);white-space:nowrap}
 .nct td{padding:3px 6px;border-top:1px solid var(--ln);white-space:nowrap}
-.nct tr.ncg td{color:var(--ok);font-weight:500;padding-top:10px;border-top:0}
+.nct tr.ncg td{color:var(--rc);font-weight:600;padding-top:10px;border-top:0}.nct tr.ncg td:before{content:'';display:inline-block;width:10px;height:10px;border-radius:3px;background:var(--rc);margin-right:6px}
 .nct tr.nxt{background:color-mix(in srgb,var(--ac) 16%,transparent)}
 .nct .ncs{color:var(--ac);font-family:ui-monospace,Menlo,Consolas,monospace;font-weight:500}
 .nct input,.nct select{padding:3px 6px;border-radius:7px;font-size:13px}
@@ -5932,13 +5933,43 @@ nav button[data-t=pnc]{--nc:#f59e0b}
 .ncrh{display:flex;align-items:center;gap:10px}.ncrh b{font-weight:600}.ncrh .mu{flex:1}
 #ncrhold[hidden]{display:none}
 #ncbody{display:grid;gap:12px;align-content:start}
+.ncsumb{background:#1d63e8;color:#fff;border:0;border-radius:10px;padding:10px 18px;font:inherit;font-weight:600;cursor:pointer}
+.ncred2{background:none;color:#e05252;border:1px solid #e05252;border-radius:8px;padding:4px 12px;font:inherit;font-size:13px;cursor:pointer;margin-left:16px}
+.ncsr{display:flex;align-items:center;gap:8px}
+#ncsvp .ncrep{max-width:900px;border:2px solid #1d63e8}
+.ncmx{border-collapse:collapse;font-size:14px;width:100%}
+.ncmx th,.ncmx td{border:1px solid var(--ln);padding:4px 8px;text-align:center}.ncmx thead th{color:var(--mu);font-weight:500}
+.ncmx tbody th{text-align:left;font-weight:600}.ncmx td.z{color:var(--mu);opacity:.5}.ncmx tr.tt th,.ncmx tr.tt td{background:var(--rs)}
+.ncbr{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:14px}.ncbr b{font-weight:600}
+select#nct:has(option[value=""]:checked){color:var(--mu)}
+.nct tr.ncrow td{background:color-mix(in srgb,var(--rc) 7%,transparent)}
+.nct tr.ncrow.fst td,.nct tr.ncrow.lst td{background:color-mix(in srgb,var(--rc) 20%,transparent)}
+.nct tr.ncrow td:first-child{border-left:4px solid var(--rc)}
+.ncno{display:inline-block;min-width:20px;font-style:normal;font-size:11px;text-align:center;border-radius:5px;background:var(--rc);color:#fff;margin-right:6px;padding:0 3px}
+.ncno.o{background:none;color:var(--mu);border:1px solid var(--ln)}
+.nctop>div{display:grid;grid-template-columns:120px 1fr;gap:4px 10px;align-items:center}
+.nctop>div>b{grid-row:span 2}
+.nctr{display:flex;flex-wrap:wrap;gap:4px 10px;align-items:center}
+.nctr span{border-radius:6px;padding:1px 6px}
+.nctr .fst{background:color-mix(in srgb,var(--rc) 22%,transparent)}
+.nctr .lst{background:color-mix(in srgb,var(--rc) 22%,transparent);outline:1px dashed var(--rc)}
+.nctr .ntl{font-size:12px;color:var(--mu);min-width:30px;padding:0}
+.nctop .lst i{color:inherit}.nctop i{color:var(--rc)}
+.nclp{flex:1;border-left:6px solid var(--rc);background:color-mix(in srgb,var(--rc) 14%,transparent);border-radius:10px;padding:8px 12px;animation:ncpop .25s ease-out}
+@keyframes ncpop{from{transform:translateY(-6px);opacity:0}to{transform:none;opacity:1}}
+.nclh{display:flex;align-items:center;gap:10px;flex-wrap:wrap}.nclh b{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:22px;color:var(--ac)}
+.nclh .ok{color:var(--ok);font-weight:600}.nclh .ncrt{background:var(--rc);color:#fff;border-radius:6px;padding:1px 8px;font-weight:600}
+.nclh button{margin-left:auto}
+.nclb{display:flex;flex-wrap:wrap;gap:6px 22px;margin-top:6px;font-size:15px}
+.nclb small{display:block;font-size:11px;color:var(--mu)}.nclb .w{flex-basis:100%}
 </style>
 <script id="ncjs">(()=>{ // ---- HLVhf 1.3: QL (QSO LOG) + NC (Net Control) ----
- const K='hlvNet',RD0=[['M','/M เคลื่อนที่'],['DX','ทางไกล'],['QRP','QRP'],['QRO','QRO'],['GEN','ทั่วไป']];
+ const K='hlvNet',RD0=[['M','/M'],['DX','DX'],['QRP','QRP'],['QRO','QRO'],['GEN','Overall']];
  let N={st:{},rigs:[],act:null,cur:null,hist:[],ord:RD0.map(r=>r[0]),lb:Object.fromEntries(RD0),yl:[],last:{}};
  try{Object.assign(N,JSON.parse(localStorage.getItem(K)||'{}'))}catch(e){}
- for(const[k,v]of RD0){if(!N.lb[k])N.lb[k]=v;if(!N.ord.includes(k))N.ord.push(k)}
- const TY=[['B','ประจำที่'],['M','เคลื่อนที่ (/M)'],['H','มือถือ QRP (Handy)'],['P','ชั่วคราว (/P)']],TYL=Object.fromEntries(TY),
+ const OLDL={'/M เคลื่อนที่':1,'ทางไกล':1,'ทั่วไป':1};
+ for(const[k,v]of RD0){if(!N.lb[k]||OLDL[N.lb[k]])N.lb[k]=v;if(!N.ord.includes(k))N.ord.push(k)}
+ const TY=[['B','Fixed'],['M','Mobile /M'],['H','HT (QRP)'],['P','Portable /P']],TYL=Object.fromEntries(TY),
   RG={B:['Icom IC-9700','Icom IC-7300','Icom IC-7100','Icom IC-2730','Icom IC-5100','Yaesu FT-2980','Yaesu FT-1900','Yaesu FTM-6000','Yaesu FTM-300','Yaesu FTM-400','Yaesu FT-991A','Kenwood TM-V71','Kenwood TM-D710','Alinco DR-135','Spender'],
    H:['Icom IC-V80','Icom ID-52','Icom ID-50','Icom IC-705','Yaesu FT-5D','Yaesu FT-65','Yaesu FT-70D','Yaesu FT-4X','Kenwood TH-D74','Kenwood TH-D75','Alinco DJ-500','Baofeng UV-5R','Motorola GP-338','Hytera','Spender (มือถือ)']};
  RG.M=RG.B;RG.P=[...RG.H,...RG.B];const RIG0=[...new Set([...RG.B,...RG.H])];
@@ -5989,7 +6020,7 @@ nav button[data-t=pnc]{--nc:#f59e0b}
   x.r=(x.ty==='M'||/\/(M|MM|AM)$/i.test(c))&&isOn('M')?'M':x.ty==='H'&&isOn('QRP')?'QRP':base();
   if(n.list.some(y=>y.c===c&&y.r===x.r)){msg(c+' เช็คอินในช่วง '+(N.lb[x.r]||x.r)+' ไปแล้ว');ci.select();return}
   remSt(x);
-  n.list.push(x);svl();ci.value='';preview('');$('#ncm').value='';$('#nct').value='';$('#ncg').value='';$('#ncy').classList.remove('on');draw();ci.focus();
+  n.list.push(x);svl();ci.value='';preview('');LASTX=x;$('#ncm').value='';$('#nct').value='';$('#ncg').value='';$('#ncy').classList.remove('on');draw();ci.focus();
   let why='';
   if(typeof qzOn==='function'&&(qzOn()||(typeof hqOn==='function'&&hqOn()))){msg('กำลังค้น '+c+' จาก QRZ ...');
    try{const z=await qrzLookup(b0);
@@ -6000,26 +6031,31 @@ nav button[data-t=pnc]{--nc:#f59e0b}
   if(x.r===base())x.r=autoRd(c,x.p);
   svl();draw();msg(why)}
  function actDlg(){const n=N.cur,box=E('div',{className:'ncdlg'});
-  box.innerHTML='<div class="pn"><h2>ช่วงที่ใช้ในข่ายนี้ (Active)</h2>'+ord().map(k=>'<label class="ncakl"><input type="checkbox" value="'+k+'"'+(isOn(k)?' checked':'')+'>'+esc(N.lb[k])+'</label>').join('')+'<div class="mu">สถานีในช่วงที่ปิด จะย้ายไปช่วงทั่วไป</div><div class="ncbtn"><button data-x="g">ทั่วไปอย่างเดียว</button><button data-x="c">ยกเลิก</button><button data-x="ok" class="pri">ตกลง</button></div></div>';
+  box.innerHTML='<div class="pn"><h2>ช่วงที่ใช้ในข่ายนี้ (Active)</h2>'+ord().map(k=>'<label class="ncakl"><input type="checkbox" value="'+k+'"'+(isOn(k)?' checked':'')+'>'+esc(N.lb[k])+'</label>').join('')+'<div class="mu">สถานีในช่วงที่ปิด จะย้ายไปช่วง Overall</div><div class="ncbtn"><button data-x="g">Overall อย่างเดียว</button><button data-x="c">ยกเลิก</button><button data-x="ok" class="pri">ตกลง</button></div></div>';
   P.prepend(box);box.onclick=e=>{const x=e.target.dataset.x;if(!x)return;const cb=[...box.querySelectorAll('input')];
    if(x==='g'){cb.forEach(i=>i.checked=i.value==='GEN');return}
    if(x==='ok'){n.act=cb.filter(i=>i.checked).map(i=>i.value);if(!n.act.length)n.act=['GEN'];N.act=n.act;const f=fb();n.list.forEach(z=>{if(!isOn(z.r))z.r=f});if(!isOn(n.rd))n.rd=act()[0];sv()}
    box.remove();draw()}}
  function remSt(x){const b=x.c.replace(/\/.*$/,'');if(x.ty||x.rig)N.st[b]={ty:x.ty||'',rig:x.rig||''};const R0=RIG0.map(r=>r.toUpperCase()),u=(x.rig||'').toUpperCase();if(u&&!R0.includes(u)&&!N.rigs.some(o=>(o.r||o).toUpperCase()===u))N.rigs.push({r:x.rig,t:x.ty||''});sv()}
  const rigOpts=t=>{const own=N.rigs.map(o=>typeof o==='string'?{r:o,t:''}:o).filter(o=>!t||!o.t||o.t===t||(t==='M'&&o.t==='B')||(t==='B'&&o.t==='M')).map(o=>o.r);return[...new Set([...own,...(t?RG[t]:RIG0)])].map(r=>'<option value="'+esc(r)+'">').join('')},
-  tySel=(v,id)=>'<select'+(id?' id="'+id+'"':' class="ncty"')+' title="ประเภทสถานี"><option value="">'+(id?'ประเภทสถานี':'—')+'</option>'+TY.map(([k,l])=>'<option value="'+k+'"'+(k===v?' selected':'')+'>'+l+'</option>').join('')+'</select>',
+  tySel=(v,id)=>'<select'+(id?' id="'+id+'"':' class="ncty"')+' title="ประเภทสถานี"><option value="">'+(id?'Station type':'—')+'</option>'+TY.map(([k,l])=>'<option value="'+k+'"'+(k===v?' selected':'')+'>'+l+'</option>').join('')+'</select>',
   stTxt=x=>[TYL[x.ty]||'',x.rig||''].filter(Boolean).join(' · ');
  const qzLive=()=>typeof qzOn==='function'&&(qzOn()||(typeof hqOn==='function'&&hqOn())),
   qzBar=()=>qzLive()?'<span class="ncqs ok">● QRZ พร้อม</span><span class="mu">พิมพ์นามเรียกขาน ระบบจะดึงข้อมูลจาก QRZ ให้ดูก่อนเช็คอิน</span>':'<span class="ncqs">● ยังไม่ได้เข้าระบบ QRZ</span><span class="mu">Name / Country / QTH / Grid จะว่าง</span><button class="sm" id="ncqzs">ตั้งค่า QRZ</button>';
- let pvT=0,pvC='';
+ let pvT=0,pvC='',LASTX=null;
+ function lastPop(){const el=$('#ncqz');if(!el||!LASTX||!N.cur)return;const x=LASTX,n=N.cur;
+  el.innerHTML='<div class="nclp" style="--rc:'+rc(x.r)+'"><div class="nclh"><span class="ok">✓ เช็คอินแล้ว</span><b>'+esc(x.c)+'</b>'+(x.yl?'<span class="ylb">YL</span>':'')+'<span class="ncrt">'+esc(N.lb[x.r]||x.r)+' #'+seq(n,x)+'</span><span class="mu">'+hm(x.t)+' UTC</span><button class="sm" id="nclpx" aria-label="ปิด">✕</button></div><div class="nclb"><span><small>Name</small>'+esc(x.n||'…')+'</span><span><small>QTH</small>'+esc(x.q||'-')+'</span><span><small>จังหวัด</small>'+esc(x.p||'-')+'</span><span><small>Station</small>'+esc(TYL[x.ty]||'-')+'</span><span><small>Rig</small>'+esc(x.rig||'-')+'</span><span><small>RST</small>'+esc(x.rs)+'</span>'+(x.cm?'<span class="w"><small>Note</small>'+esc(x.cm)+'</span>':'')+(x.tr?'<span><small>ข่าวสาร</small>มี</span>':'')+'</div></div>';
+  const b=$('#nclpx');if(b)b.onclick=()=>{LASTX=null;preview('')}}
  function preview(v){const el=$('#ncqz');if(!el)return;const b=(v||'').replace(/\/.*$/,'');clearTimeout(pvT);
+  if(!b&&LASTX){lastPop();return}
+  if(b)LASTX=null;
   if(!qzLive()||b.length<4||!(typeof CRW==='undefined'||CRW.test(b))){pvC='';el.innerHTML=qzBar();bindQz();return}
   pvT=setTimeout(async()=>{pvC=b;el.innerHTML='<span class="mu">กำลังค้น '+esc(b)+' จาก QRZ ...</span>';let z;try{z=await qrzLookup(b)}catch(e){}
    if(pvC!==b)return;
    if(!z){el.innerHTML='<span class="ncqs">● ค้น QRZ ไม่สำเร็จ</span><span class="mu">'+esc(typeof qzNote!=='undefined'?qzNote:'')+'</span>';return}
    if(z.nf){el.innerHTML='<span class="ncqs">● '+esc(b)+' ไม่พบใน QRZ</span>';return}
    const p=provOf({c:b,q:z.q||''}),n=N.cur,far=n&&n.prov&&p&&p!=='ไม่ทราบ'&&p!==n.prov;
-   el.innerHTML=(z.im?'<img src="'+esc(z.im)+'" alt="" referrerpolicy="no-referrer">':'<div class="ncav">'+esc(b.slice(-2))+'</div>')+'<div><b>'+esc(b)+'</b> '+esc(z.n||'')+'<div class="mu">'+[z.q,p!=='ไม่ทราบ'?p:'',z.co,z.g].filter(Boolean).map(esc).join(' · ')+(far?' · <span class="ncfar">ทางไกล</span>':'')+(ylHas(b)?' · <span class="ylb">YL</span>':'')+(N.st[b]?' · เคย: '+esc(stTxt(N.st[b])):'')+'</div></div><a class="sm" target="_blank" href="https://www.qrz.com/db/'+encodeURIComponent(b)+'">QRZ.com ↗</a>'},450)}
+   el.innerHTML=(z.im?'<img src="'+esc(z.im)+'" alt="" referrerpolicy="no-referrer">':'<div class="ncav">'+esc(b.slice(-2))+'</div>')+'<div><b>'+esc(b)+'</b> '+esc(z.n||'')+'<div class="mu">'+[z.q,p!=='ไม่ทราบ'?p:'',z.co,z.g].filter(Boolean).map(esc).join(' · ')+(far?' · <span class="ncfar">DX (ต่างจังหวัด)</span>':'')+(ylHas(b)?' · <span class="ylb">YL</span>':'')+(N.st[b]?' · เคย: '+esc(stTxt(N.st[b])):'')+'</div></div><a class="sm" target="_blank" href="https://www.qrz.com/db/'+encodeURIComponent(b)+'">QRZ.com ↗</a>'},450)}
  function bindQz(){const b=$('#ncqzs');if(b)b.onclick=()=>{tab('p2');setTimeout(()=>{const f=document.querySelector('#qzu');if(f){f.scrollIntoView({block:'center'});f.focus()}},100)}}
  async function updAll(){const n=N.cur;if(!n)return;
   if(!qzLive()){msg('ยังไม่ได้เข้าระบบ QRZ · ใส่ชื่อผู้ใช้/รหัสผ่าน QRZ ที่ ตั้งค่า');return}
@@ -6029,6 +6065,44 @@ nav button[data-t=pnc]{--nc:#f59e0b}
    let z;try{z=await qrzLookup(c)}catch(e){}
    if(z&&!z.nf){x.n=z.n||x.n;x.q=z.q||x.q;x.g=z.g||x.g;x.co=z.co||x.co;x.dx=z.dx||x.dx;x.p=provOf({c,q:x.q||''});ok++}else if(z&&z.nf)nf++}
   svl();draw();msg('อัปเดตแล้ว '+ok+' สถานี'+(nf?' · ไม่พบใน QRZ '+nf:'')+(ok+nf<n.list.length?' · ค้นไม่สำเร็จ '+(n.list.length-ok-nf):''))}
+ function demoNet(){
+  const D={M:[['E20AMX','Somchai Jaidee','ชลบุรี','Sri Racha','M','Yaesu FT-2980','สุขุมวิท ขาเข้า'],['E21BKM','Wichai Mankong','ระยอง','Ban Chang','M','Icom IC-2730',''],['HS2CDM','Prasert Srisuk','ชลบุรี','Bang Lamung','M','Kenwood TM-V71','มอเตอร์เวย์'],['E24DLM','Anan Thongdee','ฉะเชิงเทรา','Bang Pakong','M','Yaesu FTM-400',''],['E25EPM','Kittisak Boonma','ชลบุรี','Sattahip','M','Yaesu FT-1900','กลับจากงาน'],['E27FQM','Narong Saetang','ระยอง','Mueang Rayong','M','Icom IC-5100','']],
+   DX:[['HS1GAA','Supachai Wongsa','กรุงเทพมหานคร','Bangkok','B','Icom IC-9700','ผ่าน Repeater'],['E20HBB','Chaiwat Inthra','นครราชสีมา','Mueang Nakhon Ratchasima','B','Yaesu FT-991A',''],['HS3ICC','Thawatchai Phromma','ขอนแก่น','Mueang Khon Kaen','B','Kenwood TM-D710','ผ่าน Echolink'],['E21JDD','Somsak Kaewmanee','เชียงใหม่','Mueang Chiang Mai','B','Icom IC-7100','AllStar'],['HS8KEE','Ekkachai Muangsri','สงขลา','Hat Yai','B','Yaesu FTM-300',''],['E22LFF','Pongsak Ratana','จันทบุรี','Mueang Chanthaburi','B','Icom IC-2730',''],['E23MGG','Apichat Saengthong','ปราจีนบุรี','Kabin Buri','P','Yaesu FT-65','งานภาคสนาม'],['HS0NHH','Paiboon Chaiyo','ภูเก็ต','Mueang Phuket','B','Icom IC-9700','D-STAR']],
+   QRP:[['E20PAA','Malee Suksai','ชลบุรี','Mueang Chon Buri','H','Yaesu FT-65',''],['E21PBB','Jirayu Panya','ชลบุรี','Phanat Nikhom','H','Baofeng UV-5R','ในอาคาร'],['E22PCC','Siriporn Wongdee','ระยอง','Klaeng','H','Icom ID-52',''],['E24PDD','Nattapong Klinhom','ชลบุรี','Si Racha','H','Yaesu FT-5D',''],['E25PEE','Thanakorn Ruangsri','ชลบุรี','Sattahip','H','Icom IC-V80','สายอากาศยาง'],['E26PFF','Kanya Meesuk','ชลบุรี','Bang Lamung','H','Kenwood TH-D75',''],['E27PGG','Uthai Sonsri','ระยอง','Pluak Daeng','H','Alinco DJ-500',''],['E29PHH','Weerapong Chanta','ชลบุรี','Ban Bueng','H','Yaesu FT-4X',''],['HS2PII','Boonlert Kongkaew','ชลบุรี','Ko Chan','H','Motorola GP-338','']],
+   QRO:[['HS2QAA','Sompong Rakdee','ชลบุรี','Mueang Chon Buri','B','Icom IC-9700','50W สายอากาศ X-50'],['E20QBB','Charoen Sangsri','ชลบุรี','Bang Saen','B','Yaesu FT-2980','80W'],['E21QCC','Manop Thongkham','ระยอง','Mueang Rayong','B','Kenwood TM-V71','50W'],['E23QDD','Surasak Chaiyaphum','ชลบุรี','Sattahip','B','Icom IC-7300',''],['E24QEE','Wanchai Prasert','ชลบุรี','Phan Thong','B','Yaesu FTM-6000','สถานีชมรม'],['E26QFF','Rattana Somboon','ชลบุรี','Bo Thong','B','Icom IC-2730',''],['E28QGG','Kriangsak Muenwong','ระยอง','Ban Khai','B','Alinco DR-135','']],
+   GEN:[['E20GAA','Panya Srisawat','ชลบุรี','Si Racha','B','Icom IC-9700','สมาชิกใหม่'],['E21GBB','Duangjai Khamphan','ชลบุรี','Bang Lamung','H','Yaesu FT-65',''],['E22GCC','Somkiat Nakhon','ระยอง','Ban Chang','B','Yaesu FT-2980',''],['E23GDD','Chalerm Phonsri','ชลบุรี','Sattahip','M','Kenwood TM-V71',''],['E24GEE','Tossapol Inkaew','ชลบุรี','Mueang Chon Buri','B','Icom IC-5100',''],['E25GFF','Arunee Thepsiri','ชลบุรี','Phanat Nikhom','H','Icom ID-52',''],['E26GGG','Jakkrit Saelim','ระยอง','Klaeng','B','Yaesu FTM-400','ขอฝากข่าว'],['E27GHH','Sakda Phothong','ชลบุรี','Ban Bueng','B','Yaesu FT-991A',''],['E28GII','Pichit Rungrot','ชลบุรี','Ko Si Chang','P','Yaesu FT-5D','บนเกาะ'],['E29GJJ','Wirat Bunyaphan','ชลบุรี','Nong Yai','B','Icom IC-2730','']]};
+  const YL={E22PCC:1,E26PFF:1,E21GBB:1,E25GFF:1,HS1GAA:0},TR={HS2QAA:1,E26GGG:1,E24DLM:1};
+  const st=Date.now()-50*6e4,n={id:Date.now(),demo:1,name:'DEMO NET ชลบุรี',f:'145.375',ncs:((S.my&&S.my.call)||'E25YNH').toUpperCase(),prov:'ชลบุรี',m:'FM',start:new Date(st).toISOString(),end:'',act:['M','DX','QRP','QRO','GEN'],list:[]};
+  let t=st+60e3;const rs=['59','59','59','57','55','59','58'];let i=0;
+  for(const k of['M','DX','QRP','QRO','GEN'])for(const[c,nm,p,q,ty,rig,cm]of D[k]){t+=55e3+((i*37)%50)*1e3;
+   n.list.push({c:k==='M'?c+'/M':ty==='P'?c+'/P':c,t:new Date(t).toISOString(),n:nm,p,q,co:'Thailand',g:'',rs:rs[i%rs.length],ty,rig,cm,yl:!!YL[c],tr:!!TR[c],sp:false,r:k});i++}
+  const TV={M:['M','M','M','M','P','M'],DX:['B','B','M','P','H','B','M','P'],QRP:['H','H','H','P','H','H','H','P','H'],QRO:['B','B','B','M','B','P','B'],GEN:['B','H','M','P','B','H','M','B','P','']};
+  const RV={M:'Yaesu FT-2980',P:'Yaesu FT-65',H:'Icom ID-52',B:'Icom IC-9700'};
+  for(const k of Object.keys(TV)){const a=n.list.filter(x=>x.r===k);a.forEach((x,i)=>{const t=TV[k][i];if(t!==undefined&&t!==x.ty){x.ty=t;const ok=t&&(t==='B'||t==='M'?RG.B:RG.H).map(r=>r.toUpperCase()).includes(String(x.rig).toUpperCase());if(!ok)x.rig=t?RV[t]:''}x.c=x.c.replace(/\/(M|P)$/,'')+(t==='M'||k==='M'?'/M':t==='P'?'/P':'')})}
+  n.rd='GEN';N.cur=n;sv();draw();msg('สร้างข่ายจำลอง 40 สถานีแล้ว (ไม่ลง QSO LOG) · กดปิดข่ายเพื่อดูสรุป')}
+ // ---- eQSL export: all selected cards in one ZIP ----
+ const CRCT=(()=>{const t=new Uint32Array(256);for(let n=0;n<256;n++){let c=n;for(let k=0;k<8;k++)c=c&1?0xEDB88320^(c>>>1):c>>>1;t[n]=c>>>0}return t})(),
+  crc32=u=>{let c=0xFFFFFFFF;for(let i=0;i<u.length;i++)c=CRCT[(c^u[i])&255]^(c>>>8);return(c^0xFFFFFFFF)>>>0};
+ function zipBlob(files){const enc=new TextEncoder(),parts=[],cen=[];let off=0;const d=new Date(),dt=((d.getFullYear()-1980)<<9)|((d.getMonth()+1)<<5)|d.getDate(),tm=(d.getHours()<<11)|(d.getMinutes()<<5)|(d.getSeconds()>>1);
+  for(const f of files){const nm=enc.encode(f.name),u=f.data,c=crc32(u),h=new DataView(new ArrayBuffer(30));
+   h.setUint32(0,0x04034b50,true);h.setUint16(4,20,true);h.setUint16(6,0x800,true);h.setUint16(8,0,true);h.setUint16(10,tm,true);h.setUint16(12,dt,true);h.setUint32(14,c,true);h.setUint32(18,u.length,true);h.setUint32(22,u.length,true);h.setUint16(26,nm.length,true);h.setUint16(28,0,true);
+   parts.push(h,nm,u);const ch=new DataView(new ArrayBuffer(46));ch.setUint32(0,0x02014b50,true);ch.setUint16(4,20,true);ch.setUint16(6,20,true);ch.setUint16(8,0x800,true);ch.setUint16(10,0,true);ch.setUint16(12,tm,true);ch.setUint16(14,dt,true);ch.setUint32(16,c,true);ch.setUint32(20,u.length,true);ch.setUint32(24,u.length,true);ch.setUint16(28,nm.length,true);ch.setUint32(42,off,true);cen.push(ch,nm);off+=30+nm.length+u.length}
+  const cs=cen.reduce((a,x)=>a+x.byteLength,0),e=new DataView(new ArrayBuffer(22));e.setUint32(0,0x06054b50,true);e.setUint16(8,files.length,true);e.setUint16(10,files.length,true);e.setUint32(12,cs,true);e.setUint32(16,off,true);
+  return new Blob([...parts,...cen,e],{type:'application/zip'})}
+ async function eqslZip(rows,label,say){say=say||(t=>{if(typeof lmsg==='function')lmsg(t)});rows=rows.filter(r=>r&&r.c);
+  if(!rows.length){say('eQSL: ติ๊กเลือก QSO ก่อน');return}if(typeof window.qslCard!=='function'){say('eQSL: เปิดหน้า QSL หนึ่งครั้งก่อน');return}
+  const files=[],used={};
+  for(let i=0;i<rows.length;i++){const r=rows[i];say('eQSL: สร้างการ์ด '+(i+1)+'/'+rows.length+' · '+r.c);
+   const cv=await window.qslCard(r),b=await new Promise(z=>cv.toBlob(z,'image/jpeg',.92));if(!b)continue;
+   let nm=window.qslName?window.qslName(r,'jpg'):('QSL_'+r.c+'.jpg');if(used[nm]){used[nm]++;nm=nm.replace(/\.jpg$/,'_'+used[nm]+'.jpg')}else used[nm]=1;
+   files.push({name:nm,data:new Uint8Array(await b.arrayBuffer())});await new Promise(z=>setTimeout(z,0))}
+  const z=zipBlob(files),u=URL.createObjectURL(z),a=E('a',{href:u,download:'eQSL_'+((S.my&&S.my.call)||'').toUpperCase().replace(/\W/g,'_')+'_'+(label||new Date().toISOString().slice(0,10))+'_'+files.length+'.zip'});
+  document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000);say('eQSL: บันทึก ZIP แล้ว '+files.length+' ใบ')}
+ window.eqslZip=eqslZip;
+ {const q=$('#qsdl');if(q&&!$('#qszip')){q.insertAdjacentHTML('afterend','<button id="qszip" class="sm pri" title="รวมการ์ดของ QSO ที่ติ๊กไว้เป็นไฟล์ ZIP ไฟล์เดียว">⬇ eQSL ทั้งหมดที่เลือก (ZIP)</button>');
+   $('#qszip').onclick=()=>eqslZip([...(window.QSLPICK||[])],'',t=>{$('#qsres').textContent=t})}}
+ {const q=$('#qfill');if(q&&!$('#qlzip')){q.insertAdjacentHTML('afterend','<button id="qlzip" class="sm" title="สร้าง eQSL Card ของ QSO ที่ติ๊กเลือก รวมเป็นไฟล์ ZIP">eQSL ZIP</button>');
+   $('#qlzip').onclick=()=>eqslZip(LOG.filter(r=>typeof SEL!=='undefined'&&SEL.has(r)))}}
  function msg(t){const m=$('#ncmsg');if(m)m.textContent=t}
  // ---- open / close ----
  function openNet(){
@@ -6037,88 +6111,134 @@ nav button[data-t=pnc]{--nc:#f59e0b}
   N.last={name:n.name,f:n.f,prov:n.prov,m:n.m};N.cur=n;n.rd=act()[0];sv();draw()}
  function closeNet(){
   const n=N.cur;if(!n)return;if(!confirm('ปิดข่าย '+n.name+' ?\nสถานีทั้งหมด '+n.list.length+' สถานี บันทึกอยู่ใน QSO LOG แล้ว'))return;
-  n.end=now();toLog(n);N.hist.unshift(n);N.cur=null;
+  SUMV=false;n.end=now();toLog(n);N.hist.unshift(n);N.cur=null;
   for(const x of n.list){const b=x.c.replace(/\/.*$/,'');if(x.yl&&!N.yl.includes(b))N.yl.push(b)}
   sv();VIEW=n.id;draw()}
  const mhz=f=>{f=String(f||'').trim();const m=/^(\d+)\.(\d+)(?:\.(\d+))?$/.exec(f);if(!m)return f;const v=parseFloat(m[1]+'.'+m[2]+(m[3]||''));return v?String(+v.toFixed(6)):f};
+ const ENR={M:'/M',DX:'DX',QRP:'QRP',QRO:'QRO',GEN:'Overall'},ENT={B:'Fixed',M:'Mobile /M',H:'HT QRP',P:'Portable /P'},
+  asc=t=>String(t||'').replace(/[^\x20-\x7e]+/g,' ').replace(/\s+/g,' ').trim(),
+  cmEn=(n,x)=>['NET'+(asc(n.name)?' '+asc(n.name):'')+' #'+seq(n,x),ENR[x.r]||asc(N.lb[x.r])||'Round',x.yl?'YL':'',ENT[x.ty]||'',asc(x.rig),x.tr?'TRAFFIC':'',asc(x.cm)].filter(Boolean).join(' / ');
+ window.asciiCm=r=>r.cme||asc(r.cm);
+ const RC={M:'#16a34a',DX:'#7c3aed',QRP:'#ea7a0c',QRO:'#dc2626',GEN:'#2563eb'},RCX=['#0d9488','#db2777','#4f46e5','#ca8a04','#0891b2'],
+  rc=k=>RC[k]||RCX[Math.abs([...k].reduce((a,c)=>a+c.charCodeAt(0),0))%RCX.length];
  const seq=(n,x)=>n.list.filter(y=>y.r===x.r).indexOf(x)+1,
   cmTxt=(n,x)=>['#'+seq(n,x),N.lb[x.r]||x.r,x.yl?'YL':'',TYL[x.ty]||'',x.rig||'',x.tr?'TRAFFIC':'',x.cm].filter(Boolean).join(' · ');
- function toLog(n){ // upsert every check-in into the QSO LOG (QL)
+ function toLog(n){if(n.demo)return; // upsert every check-in into the QSO LOG (QL)
   const fr=mhz(n.f),bn=typeof bandOf==='function'?bandOf(parseFloat(fr)):'';
   for(const x of n.list){const fr=x.f||mhz(n.f),bn=typeof bandOf==='function'?bandOf(parseFloat(fr)):'';const d=x.t.slice(0,10),t=x.t.slice(11,19),cm='NET '+n.name+' · '+cmTxt(n,x);
-   const v={d,t,c:x.c,f:fr,b:bn,m:n.m||'FM',n:x.n||'',co:x.co||'',q:x.q||'',rs:x.rs||'59',rr:x.rr||'59',g:(x.g||'').toUpperCase(),dx:x.dx||'',cm,net:n.id,nk:x.t};
+   const v={d,t,c:x.c,f:fr,b:bn,m:n.m||'FM',n:x.n||'',co:x.co||'',q:x.q||'',rs:x.rs||'59',rr:x.rr||'59',g:(x.g||'').toUpperCase(),dx:x.dx||'',cm,cme:cmEn(n,x),net:n.id,nk:x.t};
    const o=LOG.find(l=>l.net===n.id&&l.nk===x.t);if(o)Object.assign(o,v);else LOG.push(v)}
   saveLog()}
  const svl=()=>{sv();if(N.cur)toLog(N.cur)};
  // ---- report ----
- const rdTop=(n,k)=>{const a=n.list.filter(x=>x.r===k).sort((x,y)=>x.t<y.t?-1:1);return{a,top:a.slice(0,3),last:a.length>3?a[a.length-1]:null}},
+ const rdTop=(n,k)=>{const a=n.list.filter(x=>x.r===k).sort((x,y)=>x.t<y.t?-1:1),l=a.slice(Math.max(3,a.length-3));return{a,top:a.slice(0,3),lst:l,last:l.length?l[l.length-1]:null}},
   ylList=n=>n.list.filter(x=>x.yl).sort((x,y)=>x.t<y.t?-1:1),
   one=x=>x.c+' '+hm(x.t);
  function repText(n){const s=counts(n),L=[];
   L.push('📻 สรุปการทำหน้าที่ Net OP','ข่าย: '+n.name+(n.f?' · '+n.f+' MHz':''),'วันที่ '+thDate(n.start)+' · '+hm(n.start)+'–'+hm(n.end||now())+' UTC ('+mins(n.start,n.end)+' นาที)','ผู้ควบคุมข่าย: '+(n.ncs||'-'),'');
   L.push('รวม '+s.tot+' สถานี · '+s.np+' จังหวัด · มีข่าวสาร '+s.tr);
   L.push(s.A.map(k=>N.lb[k]+' '+s.c[k]).join(' · ')+' · YL '+s.yl,'');
-  L.push('🏅 3 สถานีแรก / สถานีสุดท้าย ของแต่ละช่วง');for(const k of s.A){const r=rdTop(n,k);if(!r.a.length)continue;L.push('▸ '+N.lb[k]+' ('+r.a.length+'): '+r.top.map((x,i)=>(i+1)+'. '+one(x)).join(' · ')+(r.last?' · สุดท้าย '+one(r.last):''))}L.push('');
+  L.push('🏅 3 สถานีแรก / สถานีสุดท้าย ของแต่ละช่วง');for(const k of s.A){const r=rdTop(n,k);if(!r.a.length)continue;L.push('▸ '+N.lb[k]+' ('+r.a.length+'): '+'แรก '+r.top.map((x,i)=>(i+1)+'. '+one(x)).join(' · ')+(r.lst.length?' | ท้าย '+r.lst.map((x,i)=>(r.a.length-r.lst.length+i+1)+'. '+one(x)).join(' · '):''))}L.push('');
   {const y=ylList(n);L.push('👩 สถานี YL '+y.length+' สถานี'+(y.length?': '+y.map(x=>one(x)+' ('+(N.lb[x.r]||x.r)+')').join(' · '):''),'')}
+  {const m=mtx(n);L.push('📊 ประเภทสถานี: '+m.cols.map(t=>TYS[t]+' '+m.T[t]).join(' · '));for(const k of m.A){const r=m.cols.map(t=>m.M[k+'|'+t]?TYS[t]+' '+m.M[k+'|'+t]:'').filter(Boolean);if(r.length)L.push('  '+N.lb[k]+': '+r.join(' · '))}L.push('📻 ยี่ห้อวิทยุ: '+m.B.map(([b,c])=>b+' '+c).join(' · '),'')}
   L.push('จังหวัด: '+s.pv.map(([p,c])=>p+' '+c).join(' · '),'');
   for(const k of s.A){const a=n.list.filter(x=>x.r===k);if(!a.length)continue;L.push('▸ '+N.lb[k]);a.forEach((x,i)=>L.push(' '+(i+1)+'. '+x.c+(x.yl?' (YL)':'')+(x.n?' '+x.n:'')+(x.p&&x.p!=='ไม่ทราบ'?' · '+x.p:'')+(stTxt(x)?' · '+stTxt(x):'')+(x.cm?' · '+x.cm:'')))}
   L.push('','73 de '+(n.ncs||'')+' · HLVhf');return L.join('\n')}
- function repImg(n){const t=repText(n).split('\n'),W=900,lh=30,H=60+t.length*lh,cv=E('canvas',{width:W,height:H}),g=cv.getContext('2d');
-  g.fillStyle='#0d1b2e';g.fillRect(0,0,W,H);g.font='22px "IBM Plex Sans Thai",sans-serif';
-  t.forEach((s,i)=>{g.fillStyle=i===0?'#7fc4ff':(/^▸/.test(s)?'#7fe0a8':'#dfe8f5');g.fillText(s,36,48+i*lh)});
-  cv.toBlob(b=>dl('NET-'+n.name.replace(/\s+/g,'_')+'-'+n.start.slice(0,10)+'.png','image/png',b))}
+ function repImg(n){const s=counts(n),m=mtx(n),W=1080,H=1350,cv=E('canvas',{width:W*2,height:H*2}),g=cv.getContext('2d');g.scale(2,2);
+  const FF=getComputedStyle(document.body).fontFamily||'sans-serif',F=(w,z)=>g.font=w+' '+z+'px '+FF,MO=z=>g.font='700 '+z+'px ui-monospace,Menlo,Consolas,monospace';
+  const T=(t,x,y,c,al)=>{g.fillStyle=c||'#e6eef8';g.textAlign=al||'left';g.fillText(t,x,y)},RR=(x,y,w,h,r,c)=>{g.beginPath();g.roundRect(x,y,w,h,r);g.fillStyle=c;g.fill()};
+  g.fillStyle='#0b1a2e';g.fillRect(0,0,W,H);
+  const lg=document.querySelector('img.logo');try{if(lg&&lg.complete)g.drawImage(lg,56,48,96,96)}catch(e){}
+  F('500',20);T('สรุปการทำหน้าที่ Net OP',172,70,'#8fa9c8');F('700',44);T(n.name,172,118);
+  F('400',20);T((n.f?n.f+' MHz · ':'')+(n.m||'FM')+' · '+thDate(n.start)+' · '+hm(n.start)+'–'+(n.end?hm(n.end):hm(now()))+' UTC ('+mins(n.start,n.end)+' นาที)',172,150,'#c9d7ea');
+  MO(24);T('NCS '+(n.ncs||''),W-56,80,'#f5a524','right');
+  let y=186;const big=[['สถานีทั้งหมด',s.tot,'#4ea3ff'],['จังหวัด',s.np,'#2fbf71'],['YL',s.yl,'#d9478f'],['ข่าวสาร',s.tr,'#f5a524']],bw=(W-112-30)/4;
+  big.forEach(([l,v,c],i)=>{const x=56+i*(bw+10);RR(x,y,bw,120,16,'#13283f');F('500',18);T(l,x+bw/2,y+36,'#a9bdd6','center');F('700',56);T(String(v),x+bw/2,y+100,c,'center')});
+  y+=160;F('700',24);T('แยกตามช่วงเช็คเน็ต',56,y);y+=16;
+  const A=s.A,cw=(W-112-(A.length-1)*10)/A.length;
+  A.forEach((k,i)=>{const x=56+i*(cw+10);RR(x,y,cw,96,14,rc(k));F('700',22);T(N.lb[k],x+cw/2,y+34,'#fff','center');F('700',44);T(String(s.c[k]),x+cw/2,y+82,'#fff','center')});
+  y+=138;F('700',24);T('ช่วง × ประเภทสถานี',56,y);y+=14;
+  const cols=m.cols,c0=170,cwm=(W-112-c0)/(cols.length+1);RR(56,y,W-112,40+36*(A.length+1),12,'#13283f');
+  F('500',17);cols.forEach((t,j)=>T(TYS[t],56+c0+cwm*j+cwm/2,y+28,'#8fa9c8','center'));T('รวม',56+c0+cwm*cols.length+cwm/2,y+28,'#8fa9c8','center');
+  A.forEach((k,r)=>{const yy=y+64+r*36;F('700',19);T(N.lb[k],76,yy,rc(k));let tt=0;cols.forEach((t,j)=>{const v=m.M[k+'|'+t]||0;tt+=v;F(v?'700':'400',19);T(v?String(v):'·',56+c0+cwm*j+cwm/2,yy,v?'#e6eef8':'#4b6584','center')});F('700',19);T(String(tt),56+c0+cwm*cols.length+cwm/2,yy,'#ffd27a','center')});
+  {const yy=y+64+A.length*36;F('700',19);T('รวม',76,yy,'#ffd27a');cols.forEach((t,j)=>T(String(m.T[t]),56+c0+cwm*j+cwm/2,yy,'#ffd27a','center'));T(String(n.list.length),56+c0+cwm*cols.length+cwm/2,yy,'#ffd27a','center')}
+  y+=40+36*(A.length+1)+40;F('700',24);T('3 สถานีแรก | 3 สถานีสุดท้าย',56,y);y+=6;
+  for(const k of A){const r=rdTop(n,k);if(!r.a.length)continue;y+=38;F('700',19);T(N.lb[k],56,y,rc(k));
+   const seg=(arr,x0,st)=>{let x=x0;MO(15);for(const[j,z]of arr.entries()){const t=(st+j)+' '+z.c+(z.yl?' YL':'');const w=g.measureText(t).width+14;RR(x,y-21,w,29,7,rc(k)+'55');T(t,x+7,y-1,'#fff');x+=w+5}return x};
+   const x1=seg(r.top,150,1);if(r.lst.length){F('700',18);T('|',x1+3,y-2,'#8fa9c8');seg(r.lst,x1+16,r.a.length-r.lst.length+1)}}
+  const fit=(t,mw)=>{while(g.measureText(t).width>mw&&t.includes(' · '))t=t.slice(0,t.lastIndexOf(' · '))+' …';return t};
+  y+=50;F('700',22);T('YL',56,y,'#d9478f');F('400',18);T(fit(ylList(n).map(x=>x.c+' '+hm(x.t)).join(' · ')||'-',W-260),190,y);
+  y+=36;F('700',22);T('ยี่ห้อวิทยุ',56,y);F('400',18);T(fit(m.B.map(([b,c])=>b+' '+c).join(' · '),W-260),190,y);
+  y+=36;F('700',22);T('จังหวัด',56,y);F('400',18);T(fit(s.pv.map(([p,c])=>p+' '+c).join(' · '),W-260),190,y);
+  g.strokeStyle='#23405f';g.lineWidth=1;g.beginPath();g.moveTo(56,H-70);g.lineTo(W-56,H-70);g.stroke();
+  F('400',18);T('บันทึกด้วย HLVhf = HAM LOG VHF · e25ynh.github.io/HAM-LOG-Vhf',56,H-34,'#8fa9c8');MO(24);T('73 de '+(n.ncs||''),W-56,H-32,'#f5a524','right');
+  cv.toBlob(b=>dl('NET-'+(asc(n.name).replace(/\s+/g,'_')||'net')+'-'+n.start.slice(0,10)+'.png','image/png',b))}
  function repPrint(n){const w=window.open('','_blank');if(!w)return;
   w.document.write('<!doctype html><meta charset="utf-8"><title>'+esc(n.name)+'</title><style>body{font:15px/1.6 sans-serif;padding:24px;white-space:pre-wrap}</style><body>'+esc(repText(n))+'<script>print()<\/script>');w.document.close()}
- function repQrz(n){const ks=new Set(LOG.filter(r=>r.net===n.id));if(!ks.size){toLog(n);LOG.filter(r=>r.net===n.id).forEach(r=>ks.add(r))}
+ function repQrz(n){if(n.demo){msg('ข่ายจำลอง (DEMO) ไม่ส่งขึ้น QRZ');return}const ks=new Set(LOG.filter(r=>r.net===n.id));if(!ks.size){toLog(n);LOG.filter(r=>r.net===n.id).forEach(r=>ks.add(r))}
   const old=[...SEL];SEL.clear();ks.forEach(r=>SEL.add(r));try{expAdif()}finally{SEL.clear();old.forEach(r=>SEL.add(r))}
   window.open('https://logbook.qrz.com/logbook','_blank');
   msg('ดาวน์โหลดไฟล์ ADIF แล้ว · ใน QRZ Logbook กด Settings > Import แล้วเลือกไฟล์นี้')}
  const CKH=()=>{const i=new Date().toISOString();return'<div class="ncck"><div class="ncu"><span>UTC</span><span class="nclt">เวลาเครื่อง '+new Date().toLocaleTimeString('en-GB')+'</span></div><div class="ncclk">'+i.slice(11,19)+'</div><div class="ncd">'+i.slice(0,10)+'</div></div>'};
  setInterval(()=>{if(P0.hidden)return;const i=new Date().toISOString();P.querySelectorAll('.ncck').forEach(e=>{e.querySelector('.ncclk').textContent=i.slice(11,19);e.querySelector('.ncd').textContent=i.slice(0,10);e.querySelector('.nclt').textContent='เวลาเครื่อง '+new Date().toLocaleTimeString('en-GB')})},1000);
  // ---- render ----
- let VIEW=null;
+ let VIEW=null,SUMV=false;
  function draw(){
   const n=N.cur;
   if(!n){const v=VIEW&&N.hist.find(h=>h.id===VIEW);P.innerHTML=(v?sumHTML(v):'')+openHTML()+histHTML();bind();return}
   const s=counts(n);
-  P.innerHTML='<div class="pn nch"><div><span class="mu">ชื่อข่าย</span><b>'+esc(n.name)+'</b></div><div><span class="mu">ความถี่</span><b class="mono">'+esc(n.f||'-')+'</b></div><div><span class="mu">ผู้ควบคุมข่าย</span><b class="mono">'+esc(n.ncs||(S.my&&S.my.call)||'-')+'</b></div><div><span class="mu">จังหวัดข่าย</span><b>'+esc(n.prov||'-')+'</b></div><div><span class="mu">เริ่ม (UTC)</span><b>'+hm(n.start)+' · '+mins(n.start)+' นาที</b></div>'+CKH()+'<button id="ncx" class="ncred">ปิดข่าย</button></div>'+
-  '<div class="pn"><div class="ncrd"><span class="mu">กำลังเรียกช่วง</span>'+act().map((k,i)=>'<span class="ncch'+(n.rd===k?' on':'')+'" data-k="'+k+'"><button class="ncl" data-mv="'+i+',-1" title="เลื่อนซ้าย">‹</button><b>'+(i+1)+' · '+esc(N.lb[k])+' ('+s.c[k]+')</b><button class="ncl" data-mv="'+i+',1" title="เลื่อนขวา">›</button></span>').join('')+'<button id="ncadd" class="sm">+ ช่วง</button><button id="ncact" class="sm" title="เลือกช่วงที่ใช้ในข่ายนี้">Active ช่วง</button></div>'+
-  '<div class="ncin"><input id="ncc" placeholder="นามเรียกขาน แล้วกด Enter" autocomplete="off" spellcheck="false"><input id="ncr" value="59" title="RST" style="width:70px"><button id="ncy" class="ncyl" title="สถานี YL">YL</button>'+tySel('','nct')+'<input id="ncg" list="ncrl" placeholder="เครื่องวิทยุ" autocomplete="off"><datalist id="ncrl">'+rigOpts()+'</datalist><input id="ncm" placeholder="หมายเหตุ" autocomplete="off"><button id="ncgo" class="pri">เช็คอิน</button></div><div id="ncqz" class="ncqz">'+qzBar()+'</div><div id="ncmsg" class="mu"></div>'+
+  P.innerHTML='<div class="pn nch"><div><span class="mu">ชื่อข่าย</span><b>'+esc(n.name)+'</b></div><div><span class="mu">ความถี่</span><b class="mono">'+esc(n.f||'-')+'</b></div><div><span class="mu">ผู้ควบคุมข่าย</span><b class="mono">'+esc(n.ncs||(S.my&&S.my.call)||'-')+'</b></div><div><span class="mu">จังหวัดข่าย</span><b>'+esc(n.prov||'-')+'</b></div><div><span class="mu">เริ่ม (UTC)</span><b>'+hm(n.start)+' · '+mins(n.start)+' นาที</b></div>'+CKH()+'<button id="ncsv" class="ncsumb">สรุปข่าย</button></div>'+(SUMV?'<div id="ncsvp">'+sumHTML(n,1)+'</div>':'')+
+  '<div class="pn"><div class="ncrd"><span class="mu">กำลังเรียกช่วง</span>'+act().map((k,i)=>'<span class="ncch'+(n.rd===k?' on':'')+'" data-k="'+k+'" style="--rc:'+rc(k)+'"><button class="ncl" data-mv="'+i+',-1" title="เลื่อนซ้าย">‹</button><b>'+(i+1)+' · '+esc(N.lb[k])+' ('+s.c[k]+')</b><button class="ncl" data-mv="'+i+',1" title="เลื่อนขวา">›</button></span>').join('')+'<button id="ncadd" class="sm">+ ช่วง</button><button id="ncact" class="sm" title="เลือกช่วงที่ใช้ในข่ายนี้">Active ช่วง</button></div>'+
+  '<div class="ncin"><input id="ncc" placeholder="Callsign + Enter" autocomplete="off" spellcheck="false"><input id="ncr" value="59" title="RST" style="width:70px"><button id="ncy" class="ncyl" title="สถานี YL">YL</button>'+tySel('','nct')+'<input id="ncg" list="ncrl" placeholder="Rig" autocomplete="off"><datalist id="ncrl">'+rigOpts()+'</datalist><input id="ncm" placeholder="Note" autocomplete="off"><button id="ncgo" class="pri">Check in</button></div><div id="ncqz" class="ncqz">'+qzBar()+'</div><div id="ncmsg" class="mu"></div>'+
   '<div class="ncw"><table class="nct"><thead><tr><th>Qso Date (UTC)</th><th>Callsign</th><th>Freq</th><th>Band</th><th>Mode</th><th>Name</th><th>Country</th><th>QTH</th><th>S</th><th>R</th><th>Grid</th><th>Comment</th><th>ข่าวสาร</th><th></th></tr></thead><tbody>'+
   act().map(k=>{const a=n.list.map((x,i)=>[x,i]).filter(([x])=>x.r===k);if(!a.length)return'';
    const fr=mhz(n.f),bn=typeof bandOf==='function'?bandOf(parseFloat(fr)):'';
-   return'<tr class="ncg"><td colspan="14">'+esc(N.lb[k])+' · '+a.length+'</td></tr>'+a.map(([x,i])=>{const fr=x.f||mhz(n.f),bn=typeof bandOf==='function'?bandOf(parseFloat(fr)):'';return'<tr data-i="'+i+'"><td>'+x.t.slice(8,10)+'/'+x.t.slice(5,7)+' '+hm(x.t)+'</td><td class="ncs">'+esc(x.c)+' <button class="ylt'+(x.yl?' on':'')+'" data-f="yl" title="'+(x.yl?'สถานี YL (กดเพื่อเอาออก)':'กดเพื่อติดป้าย YL')+'">YL</button></td><td>'+esc(fr)+'</td><td>'+esc(bn)+'</td><td>'+esc(n.m||'FM')+'</td><td>'+esc(x.n||'…')+'</td><td>'+esc(x.co||'')+'</td><td>'+esc(x.q||'')+'</td><td>'+esc(x.rs)+'</td><td>'+esc(x.rr||'59')+'</td><td>'+esc(x.g||'')+'</td><td class="nccm"><span>'+esc(cmTxt(n,x))+'</span> <button class="nced" data-f="ed" title="แก้ประเภทสถานี / เครื่อง / ช่วง / หมายเหตุ">✎</button></td><td><button class="nct1'+(x.tr?' on':'')+'" data-f="tr">'+(x.tr?'มี':'–')+'</button></td><td><button class="ncdel" data-f="del" title="ลบสถานีนี้">✕</button></td></tr>'+
-    (x._ed?'<tr class="ncedr" data-i="'+i+'"><td colspan="14"><div class="ncst">'+tySel(x.ty)+'<input class="ncrg" list="ncrl" value="'+esc(x.rig||'')+'" placeholder="เครื่องวิทยุ"><select class="ncrs">'+act().map(r=>'<option value="'+r+'"'+(r===x.r?' selected':'')+'>'+esc(N.lb[r])+'</option>').join('')+'</select><input class="ncce" value="'+esc(x.cm)+'" placeholder="หมายเหตุ"><button class="pri sm" data-f="ed">เสร็จ</button></div></td></tr>':'')}).join('')}).join('')+
+   return'<tr class="ncg" style="--rc:'+rc(k)+'"><td colspan="14">'+esc(N.lb[k])+' · '+a.length+'</td></tr>'+a.map(([x,i])=>{const fr=x.f||mhz(n.f),bn=typeof bandOf==='function'?bandOf(parseFloat(fr)):'';const rk=a.findIndex(([y])=>y===x),fl=rk<3?'fst':rk>=Math.max(3,a.length-3)?'lst':'';return'<tr data-i="'+i+'" class="ncrow '+fl+'" style="--rc:'+rc(k)+'"><td>'+(fl?'<i class="ncno">'+(rk+1)+'</i>':'<i class="ncno o">'+(rk+1)+'</i>')+x.t.slice(8,10)+'/'+x.t.slice(5,7)+' '+hm(x.t)+'</td><td class="ncs">'+esc(x.c)+' <button class="ylt'+(x.yl?' on':'')+'" data-f="yl" title="'+(x.yl?'สถานี YL (กดเพื่อเอาออก)':'กดเพื่อติดป้าย YL')+'">YL</button></td><td>'+esc(fr)+'</td><td>'+esc(bn)+'</td><td>'+esc(n.m||'FM')+'</td><td>'+esc(x.n||'…')+'</td><td>'+esc(x.co||'')+'</td><td>'+esc(x.q||'')+'</td><td>'+esc(x.rs)+'</td><td>'+esc(x.rr||'59')+'</td><td>'+esc(x.g||'')+'</td><td class="nccm"><span>'+esc(cmTxt(n,x))+'</span> <button class="nced" data-f="ed" title="แก้ประเภทสถานี / เครื่อง / ช่วง / หมายเหตุ">✎</button></td><td><button class="nct1'+(x.tr?' on':'')+'" data-f="tr">'+(x.tr?'มี':'–')+'</button></td><td><button class="ncdel" data-f="del" title="ลบสถานีนี้">✕</button></td></tr>'+
+    (x._ed?'<tr class="ncedr" data-i="'+i+'"><td colspan="14"><div class="ncst">'+tySel(x.ty)+'<input class="ncrg" list="ncrl" value="'+esc(x.rig||'')+'" placeholder="Rig"><select class="ncrs">'+act().map(r=>'<option value="'+r+'"'+(r===x.r?' selected':'')+'>'+esc(N.lb[r])+'</option>').join('')+'</select><input class="ncce" value="'+esc(x.cm)+'" placeholder="Note"><button class="pri sm" data-f="ed">เสร็จ</button></div></td></tr>':'')}).join('')}).join('')+
   '</tbody></table></div>'+
-  '<div class="ncsum"><span>'+s.tot+' สถานี · '+s.np+' จังหวัด · ข่าวสาร '+s.tr+' · YL '+s.yl+'</span><button id="ncupd" class="sm">อัปเดตชื่อ / QTH / Grid จาก QRZ</button></div></div>';
+  '<div class="ncsum"><span>'+s.tot+' สถานี · '+s.np+' จังหวัด · ข่าวสาร '+s.tr+' · YL '+s.yl+'</span><span class="ncsr"><button id="ncupd" class="sm">อัปเดตชื่อ / QTH / Grid จาก QRZ</button><button id="ncx" class="ncred2">ปิดข่าย</button></span></div></div>';
   bind()}
- function sumHTML(n){const s=counts(n);
-  return'<div class="pn ncrep"><div class="ncrh"><b>สรุปการทำหน้าที่ Net OP</b><div>'+esc(n.name)+(n.f?' · '+esc(n.f)+' MHz':'')+'</div><div class="mu">'+thDate(n.start)+' · '+hm(n.start)+'–'+hm(n.end)+' UTC ('+mins(n.start,n.end)+' นาที) · ผู้ควบคุมข่าย '+esc(n.ncs)+'</div></div>'+
+ const TYK=['B','M','H','P',''],TYS={B:'Fixed',M:'Mobile',H:'HT',P:'Portable','':'ไม่ระบุ'},
+  brand=r=>{r=String(r||'').trim();if(!r)return'ไม่ระบุ';const b=r.split(/\s+/)[0].toUpperCase();return/^(IC|ID)-/.test(b)?'ICOM':/^(FT|FTM)-/.test(b)?'YAESU':/^(TM|TH)-/.test(b)?'KENWOOD':/^UV-/.test(b)?'BAOFENG':b},
+  mtx=n=>{const A=n.act?ord().filter(k=>n.act.includes(k)):ord(),M={},T={},B={};for(const x of n.list){const t=TYK.includes(x.ty||'')?(x.ty||''):'';M[x.r+'|'+t]=(M[x.r+'|'+t]||0)+1;T[t]=(T[t]||0)+1;const b=brand(x.rig);B[b]=(B[b]||0)+1}
+   return{A,M,T,cols:TYK.filter(t=>T[t]),B:Object.entries(B).sort((a,b)=>b[1]-a[1])}};
+ function mtxHTML(n){const m=mtx(n);if(!n.list.length)return'';
+  return'<div class="mu">ช่วง × ประเภทสถานี</div><table class="ncmx"><thead><tr><th></th>'+m.cols.map(t=>'<th>'+TYS[t]+'</th>').join('')+'<th>รวม</th></tr></thead><tbody>'+
+  m.A.map(k=>{const row=m.cols.map(t=>m.M[k+'|'+t]||0),tot=row.reduce((a,b)=>a+b,0);return'<tr><th style="color:'+rc(k)+'">'+esc(N.lb[k])+'</th>'+row.map(v=>'<td'+(v?'':' class="z"')+'>'+(v||'·')+'</td>').join('')+'<td><b>'+tot+'</b></td></tr>'}).join('')+
+  '<tr class="tt"><th>รวม</th>'+m.cols.map(t=>'<td><b>'+m.T[t]+'</b></td>').join('')+'<td><b>'+n.list.length+'</b></td></tr></tbody></table>'+
+  '<div class="mu">ยี่ห้อวิทยุ</div><div class="ncbr">'+m.B.map(([b,c])=>'<span><b>'+esc(b)+'</b> '+c+'</span>').join('')+'</div>'}
+ function sumHTML(n,live){const s=counts(n);
+  return'<div class="pn ncrep"><div class="ncrh"><b>สรุปการทำหน้าที่ Net OP</b><div>'+esc(n.name)+(n.f?' · '+esc(n.f)+' MHz':'')+'</div><div class="mu">'+thDate(n.start)+' · ' +hm(n.start)+'–'+(n.end?hm(n.end):'ตอนนี้ '+hm(now()))+' UTC ('+mins(n.start,n.end)+' นาที) · ผู้ควบคุมข่าย '+esc(n.ncs)+'</div></div>'+
   '<div class="ncbig"><div><span>รวมทั้งหมด</span><b>'+s.tot+'</b></div><div><span>จังหวัด</span><b>'+s.np+'</b></div><div><span>มีข่าวสาร</span><b>'+s.tr+'</b></div></div>'+
-  '<div class="ncsm">'+s.A.map(k=>'<div><span>'+esc(N.lb[k])+'</span><b>'+s.c[k]+'</b></div>').join('')+'<div class="yl"><span>YL</span><b>'+s.yl+'</b></div></div>'+
+  mtxHTML(n,s)+'<div class="ncsm">'+s.A.map(k=>'<div><span>'+esc(N.lb[k])+'</span><b>'+s.c[k]+'</b></div>').join('')+'<div class="yl"><span>YL</span><b>'+s.yl+'</b></div></div>'+
   '<div class="mu">จังหวัดที่เข้าร่วม</div><div>'+s.pv.map(([p,c])=>esc(p)+' '+c).join(' · ')+'</div>'+
-  '<div class="mu">3 สถานีแรก / สถานีสุดท้าย ของแต่ละช่วง</div><div class="nctop">'+s.A.map(k=>{const r=rdTop(n,k);if(!r.a.length)return'';return'<div><b>'+esc(N.lb[k])+' <span class="mu">('+r.a.length+')</span></b>'+r.top.map((x,i)=>'<span><i>'+(i+1)+'</i>'+esc(x.c)+(x.yl?' <em>YL</em>':'')+' <u>'+hm(x.t)+'</u></span>').join('')+(r.last?'<span class="lst"><i>สุดท้าย</i>'+esc(r.last.c)+(r.last.yl?' <em>YL</em>':'')+' <u>'+hm(r.last.t)+'</u></span>':'')+'</div>'}).join('')+'</div>'+
+  '<div class="mu">3 สถานีแรก / 3 สถานีสุดท้าย ของแต่ละช่วง</div><div class="nctop">'+s.A.map(k=>{const r=rdTop(n,k);if(!r.a.length)return'';const sp=(x,no,c)=>'<span class="'+c+'"><i>'+no+'</i>'+esc(x.c)+(x.yl?' <em>YL</em>':'')+' <u>'+hm(x.t)+'</u></span>';return'<div style="--rc:'+rc(k)+'"><b style="color:'+rc(k)+'">'+esc(N.lb[k])+' <span class="mu">('+r.a.length+')</span></b><div class="nctr"><span class="ntl">แรก</span>'+r.top.map((x,i)=>sp(x,i+1,'fst')).join('')+'</div>'+(r.lst.length?'<div class="nctr"><span class="ntl">ท้าย</span>'+r.lst.map((x,i)=>sp(x,r.a.length-r.lst.length+i+1,'lst')).join('')+'</div>':'')+'</div>'}).join('')+'</div>'+
   '<div class="mu">สถานี YL ('+ylList(n).length+')</div><div class="ncyls">'+(ylList(n).map(x=>'<span><em>YL</em>'+esc(x.c)+' <u>'+hm(x.t)+' UTC · '+esc(N.lb[x.r]||x.r)+'</u></span>').join('')||'<span class="mu">ไม่มี</span>')+'</div>'+
   '<div class="mu">รายชื่อตามลำดับเช็คอิน</div><div class="mono" style="font-size:13px">'+n.list.map(x=>esc(x.c)+(x.yl?'(YL)':'')).join(' · ')+'</div>'+
-  '<div class="ncbtn"><button data-rp="txt" class="ncline">คัดลอกส่ง LINE</button><button data-rp="img">บันทึกเป็นรูปภาพ</button><button data-rp="prt">พิมพ์ / PDF</button><button data-rp="qrz" class="pri">ส่งขึ้น QRZ ('+s.tot+')</button></div><div id="ncmsg" class="mu"></div></div>'}
+  (live?'<div class="ncbtn"><button id="lvtxt" class="ncline">คัดลอกส่ง LINE</button><button id="lvimg">บันทึกเป็นรูปภาพ</button><button id="ncsvx">ปิดหน้าสรุป</button></div>':'<div class="ncbtn"><button data-rp="txt" class="ncline">คัดลอกส่ง LINE</button><button data-rp="img">บันทึกเป็นรูปภาพ</button><button data-rp="prt">พิมพ์ / PDF</button><button data-rp="zip">eQSL ทั้งข่าย (ZIP)</button><button data-rp="qrz" class="pri">ส่งขึ้น QRZ ('+s.tot+')</button></div>')+'<div id="ncmsg" class="mu"></div></div>'}
  function openHTML(){const l=N.last||{},my=(S.my&&S.my.call)||'';
-  return'<div class="pn"><div class="ncoh"><h2>เปิดข่ายใหม่</h2>'+CKH()+'</div><div class="ncop"><label>ชื่อข่าย<input id="nnm" value="'+esc(l.name||'')+'" placeholder="ข่ายเช้า ชลบุรี"></label><label>ความถี่ (MHz)<input id="nfq" value="'+esc(l.f||'')+'" placeholder="145.375"></label><label>โหมด<select id="nmd">'+['FM','SSB','DV','VOIP'].map(m=>'<option'+(m===(l.m||'FM')?' selected':'')+'>'+m+'</option>').join('')+'</select></label><label>ผู้ควบคุมข่าย (Callsign)<input id="nncs" placeholder="E25YNH" spellcheck="false" style="text-transform:uppercase" value="'+esc(my)+'"></label><label>จังหวัดของข่าย <span style="font-size:11px">(ใช้แยกสถานีทางไกล)</span><select id="npv"><option value="">— ไม่ระบุ —</option>'+provList().map(p=>'<option'+(p===l.prov?' selected':'')+'>'+p+'</option>').join('')+'</select></label></div><div class="ncak"><span class="mu">ช่วงที่ใช้ (Active)</span>'+ord().map(k=>'<label class="ncakl"><input type="checkbox" class="ncakc" value="'+k+'"'+(!N.act||N.act.includes(k)?' checked':'')+'>'+esc(N.lb[k])+'</label>').join('')+'<button type="button" id="ncgen" class="sm">ทั่วไปอย่างเดียว</button></div><button id="nopen" class="pri">เปิดข่าย</button></div>'}
+  return'<div class="pn"><div class="ncoh"><h2>เปิดข่ายใหม่</h2>'+CKH()+'</div><div class="ncop"><label>ชื่อข่าย<input id="nnm" value="'+esc(l.name||'')+'" placeholder="ข่ายเช้า ชลบุรี"></label><label>ความถี่ (MHz)<input id="nfq" value="'+esc(l.f||'')+'" placeholder="145.375"></label><label>โหมด<select id="nmd">'+['FM','SSB','DV','VOIP'].map(m=>'<option'+(m===(l.m||'FM')?' selected':'')+'>'+m+'</option>').join('')+'</select></label><label>ผู้ควบคุมข่าย (Callsign)<input id="nncs" placeholder="E25YNH" spellcheck="false" style="text-transform:uppercase" value="'+esc(my)+'"></label><label>จังหวัดของข่าย <span style="font-size:11px">(ใช้แยกสถานีทางไกล)</span><select id="npv"><option value="">— ไม่ระบุ —</option>'+provList().map(p=>'<option'+(p===l.prov?' selected':'')+'>'+p+'</option>').join('')+'</select></label></div><div class="ncak"><span class="mu">ช่วงที่ใช้ (Active)</span>'+ord().map(k=>'<label class="ncakl"><input type="checkbox" class="ncakc" value="'+k+'"'+(!N.act||N.act.includes(k)?' checked':'')+'>'+esc(N.lb[k])+'</label>').join('')+'<button type="button" id="ncgen" class="sm">Overall อย่างเดียว</button></div><div class="ncbtn" style="justify-content:flex-start"><button id="nopen" class="pri">เปิดข่าย</button><button id="ndemo" title="สร้างข่ายตัวอย่าง 40 สถานี ไม่ลง QSO LOG">ข่ายจำลอง 40 สถานี (DEMO)</button></div></div>'}
  function histHTML(){if(!N.hist.length)return'';
   return'<div class="pn"><h2>ประวัติการทำหน้าที่ Net OP <span class="mu" style="font-weight:400">'+N.hist.length+' ครั้ง</span></h2><div class="nchl">'+N.hist.map(h=>'<div class="nchr'+(h.id===VIEW?' on':'')+'" data-h="'+h.id+'"><b>'+esc(h.name)+'</b><span>'+thDate(h.start)+' · '+hm(h.start)+' UTC</span><span>'+h.list.length+' สถานี</span><button class="nct1" data-hd="'+h.id+'" title="ลบประวัติ">✕</button></div>').join('')+'</div></div>'}
  function bind(){
   const q=s=>P.querySelector(s),qa=s=>P.querySelectorAll(s),n=N.cur;
   if(q('#nopen'))q('#nopen').onclick=openNet;
+  if(q('#ndemo'))q('#ndemo').onclick=demoNet;
   if(q('#ncgen'))q('#ncgen').onclick=()=>qa('.ncakc').forEach(i=>i.checked=i.value==='GEN');
   qa('[data-h]').forEach(r=>r.onclick=e=>{if(e.target.dataset.hd)return;VIEW=+r.dataset.h;draw()});
   qa('[data-hd]').forEach(b=>b.onclick=()=>{if(!confirm('ลบประวัติข่ายนี้? (QSO ใน QSO LOG ยังอยู่)'))return;N.hist=N.hist.filter(h=>h.id!==+b.dataset.hd);if(VIEW===+b.dataset.hd)VIEW=null;sv();draw()});
   qa('[data-rp]').forEach(b=>b.onclick=()=>{const h=N.hist.find(x=>x.id===VIEW);if(!h)return;const k=b.dataset.rp;
    if(k==='txt')navigator.clipboard.writeText(repText(h)).then(()=>msg('คัดลอกแล้ว · วางใน LINE ได้เลย'),()=>msg('คัดลอกไม่ได้'));
-   if(k==='img')repImg(h);if(k==='prt')repPrint(h);if(k==='qrz')repQrz(h)});
+   if(k==='img')repImg(h);if(k==='prt')repPrint(h);if(k==='qrz')repQrz(h);if(k==='zip')eqslZip(h.demo?h.list.map(x=>({c:x.c,d:x.t.slice(0,10),t:x.t.slice(11,19),f:x.f||mhz(h.f),b:typeof bandOf==='function'?bandOf(parseFloat(x.f||mhz(h.f))):'',m:h.m||'FM',rs:x.rs,rr:'59',n:x.n,q:x.q})):LOG.filter(r=>r.net===h.id),asc(h.name).replace(/\s+/g,'_')||'NET',msg)});
   if(!n)return;
-  q('#ncx').onclick=closeNet;q('#ncgo').onclick=checkin;
+  q('#ncx').onclick=closeNet;
+  if(q('#lvtxt'))q('#lvtxt').onclick=()=>navigator.clipboard.writeText(repText(n)).then(()=>msg('คัดลอกสรุปแล้ว'),()=>msg('คัดลอกไม่ได้'));
+  if(q('#lvimg'))q('#lvimg').onclick=()=>repImg(n);
+  q('#ncsv').onclick=()=>{SUMV=!SUMV;draw()};
+  if(q('#ncsvx'))q('#ncsvx').onclick=()=>{SUMV=false;draw()};q('#ncgo').onclick=checkin;
   q('#ncc').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();checkin()}};
   q('#ncc').oninput=e=>{const v=e.target.value.toUpperCase();if(e.target.value!==v)e.target.value=v;preview(v.trim())};
-  bindQz();
+  bindQz();if(LASTX&&!$('#ncc').value)lastPop();
   P.querySelectorAll('.ncin input,.ncin select').forEach(el=>{if(el.id!=='ncc')el.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();checkin()}}});
   q('#nct').onchange=e=>{q('#ncrl').innerHTML=rigOpts(e.target.value);const g=q('#ncg');g.value='';g.focus()};
   q('#ncg').onfocus=()=>{q('#ncrl').innerHTML=rigOpts(q('#nct').value)};
